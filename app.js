@@ -4,9 +4,21 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var Datastore = require('nedb');
 var path = require('path');
+var _ = require('underscore');
 
-var soilSensor = '28-000006a3684e'
-var airSensor = '28-000006a36dbe'
+var sensors = [
+  {
+    'id': '28-000006a3684e',
+    'name': 'Soil sensor',
+  },  
+  {
+    'id': '28-000006a36dbe',
+    'name': 'Air sensor',
+  }  
+]
+
+// Current temperature
+var currentTemp;
 
 var hostname = require("os").hostname();
 
@@ -20,6 +32,11 @@ app.get('/', function(req, res){
 });
 
 console.log('Hostname: '+hostname)
+
+/**
+  Read the sensors and save to DB if running on the Pi.
+**/
+
 if (hostname === 'raspberrypi') { 
   var ds18b20 = require('ds18b20');
   var mySensors = ds18b20.sensors(function(err, ids) {
@@ -29,7 +46,9 @@ if (hostname === 'raspberrypi') {
     }
 
     console.log(ids);
-
+    /**
+      Read the sensors every 5 seconds and save to DB.
+    **/
     setInterval(function(){
         ids.forEach(function(item) {
             ds18b20.temperature(item, function(err, value) {
@@ -50,17 +69,33 @@ if (hostname === 'raspberrypi') {
   });
 }
 
+
+setInterval(function(){
+
+  db.temperature.find({sensorId: { $in: _.pluck(sensors, 'id')}}).sort({date: -1}).limit(2).exec(function (err, docs) {
+    docs.forEach(function(item) {
+      
+      var tempDate = new Date(0);
+      tempDate.setUTCSeconds(item.date);
+
+      sensor = _.findWhere(sensors, {'id': item.sensorId})
+
+      console.log('#################################');
+      console.log("Sensor: " + sensor.name);
+      console.log("Temperature: "+item.temperature);
+      console.log("Date: "+ tempDate);
+      currentTemp = item;
+    });      
+  });    
+
+}, 1000);
+  
 io.on('connection', function(socket){
   console.log('a user connected');
-  
+
   setInterval(function(){
-    db.temperature.find({sensorId: { $in: [soilSensor, airSensor]}}).sort({date: -1}).limit(2).exec(function (err, docs) {
-      console.log(docs[0].sensorId+': '+docs[0].temperature);
-      console.log(docs[1].sensorId+': '+docs[1].temperature);
-      console.log('Date: '+ new Date(docs[0].date * 1000).toLocaleString());
-      socket.emit('temperature', docs);
-    });
-  }, 5000);
+    io.emit('temperature', currentTemp);
+  }, 1000);
 
   socket.on('disconnect', function(){
     console.log('user disconnected');
