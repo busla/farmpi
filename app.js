@@ -75,8 +75,8 @@ setInterval(function(){
   db.temperature.find({sensorId: { $in: _.pluck(sensors, 'id')}}).sort({date: -1}).limit(2).exec(function (err, docs) {
     docs.forEach(function(item) {
       
-      var tempDate = new Date(0);
-      tempDate.setUTCSeconds(item.date);
+      var tempDate = new Date(item.date);
+      
 
       sensor = _.findWhere(sensors, {'id': item.sensorId})
 
