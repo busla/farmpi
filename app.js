@@ -15,10 +15,8 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/ui/index.html');
 });
 
-http.listen(3000, function(){
-  console.log('listening on *:8000');
-});
 
+/*
 var mySensors = ds18b20.sensors(function(err, ids) {
   if (err) {
     console.log('Oops, something bad happened!');
@@ -45,7 +43,7 @@ var mySensors = ds18b20.sensors(function(err, ids) {
       });
   }, 5000);
 });
-
+*/
 
 io.on('connection', function(socket){
   console.log('a user connected');
@@ -56,7 +54,7 @@ io.on('connection', function(socket){
       console.log('Date: '+ new Date(docs[0].date * 1000).toLocaleString());
       //socket.emit('temperature', docs[0]);
     });
-  }, 1000);
+  }, 5000);
 
   socket.on('disconnect', function(){
     console.log('user disconnected');
@@ -64,3 +62,7 @@ io.on('connection', function(socket){
 
 });
 
+
+http.listen(3000, function(){
+  console.log('listening on *:8000');
+});
