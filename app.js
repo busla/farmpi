@@ -2,14 +2,13 @@ var express  = require('express');
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-//var ds18b20 = require('ds18b20');
 var Datastore = require('nedb');
 var path = require('path');
 
 var soilSensor = '28-000006a3684e'
 var airSensor = '28-000006a36dbe'
 
-var os = require("os");
+var hostname = require("os").hostname();
 
 db = {}
 db.temperature = new Datastore('temperature.db');
@@ -20,8 +19,9 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/ui/index.html');
 });
 
-
-if (os.hostname() === 'raspberrypi') {
+console.log('Hostname: '+hostname)
+if (hostname === 'raspberrypi') { 
+  var ds18b20 = require('ds18b20');
   var mySensors = ds18b20.sensors(function(err, ids) {
     if (err) {
       console.log('Oops, something bad happened!');
