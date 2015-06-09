@@ -2,6 +2,10 @@
   font-size: 150px !important;
 }
 
-.temperature {
+.temperature, .scale {
   font-size: 100px;
+}
+
+#tempChart {
+    width: 100%;
 }

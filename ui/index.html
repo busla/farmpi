@@ -18,6 +18,7 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+
   </head>
   <body>
     
@@ -37,7 +38,8 @@
             <i class="wi wi-thermometer-internal"></i>
             <div class="caption">
               <h3>Soil temperature</h3>
-              <p id="soil" class="temperature">22.1 &deg;C</p>
+              <span id="soil" class="temperature"></span><span class="scale">&deg;C</span>
+              <p class="time"></p>
             </div>
           </div>
         </div>
@@ -50,26 +52,109 @@
             <i class="wi wi-thermometer-exterior"></i>
             <div class="caption">
               <h3>Air temperature</h3>
-              <p id="air" class="temperature">22.9 &deg;C</p>
+              <span id="air" class="temperature"></span><span class="scale">&deg;C</span>
+              <p class="time"></p>
             </div>
           </div>
         </div>
       </div>
-    </div>  
-
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <canvas id="tempChart"></canvas>
+    </div>
   </div>
 </div>
   <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>   
-
+  <script src="Chart.js/Chart.min.js"></script>   
 
 
   <script>
     var socket = io();
     socket.on('temperature', function(data){
-      $('#messages').text(data.temperature);
+      console.log(data);
+      var now = new Date();
+      $('#'+data.type).text(data.temperature);
+      $('.time').text(now);
     });
+  </script>
+
+  <script>
+    var socket = io();
+    socket.on('dump', function(data){
+      
+    });
+  </script>
+
+
+  <script>
+
+
+    var data = {
+        labels: [],
+        datasets: [
+            {
+                label: "Air temperature",
+                fillColor: "rgba(220,220,220,0.2)",
+                strokeColor: "rgba(220,220,220,1)",
+                pointColor: "rgba(220,220,220,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(220,220,220,1)",
+                data: [],
+            },
+            {
+                label: "Soil temperature",
+                fillColor: "rgba(151,187,205,0.2)",
+                strokeColor: "rgba(151,187,205,1)",
+                pointColor: "rgba(151,187,205,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(151,187,205,1)",
+                data: [],
+            }
+        ]
+    };    
+
+    
+    Chart.defaults.global.responsive = true;
+    var ctx = $("#tempChart").get(0).getContext("2d");
+    // This will get the first returned node in the jQuery collection.
+    var myLineChart = new Chart(ctx).Line(data);
+    
+
+    var airData = [];
+    var soilData = [];
+    var tempDate = [];
+
+    $.getJSON( "data/charts.json", function( jsonFile ) {
+      
+      $.each( jsonFile, function(i, value) {
+        if (value.type == 'soil') {
+          soilData.push(value.temperature);          
+        }
+
+        else {
+          airData.push(value.temperature);
+        }
+
+        tempDate.push(value.date)        
+        
+        console.log(value.date);  
+      });
+      for (var i = 0; i < (soilData.length - 10); i++) {
+          myLineChart.addData([soilData[i], airData[i]], tempDate[i]);
+          //Do something
+      }      
+      
+      
+      
+    });
+   
+    
   </script>
   </body>
 </html>
