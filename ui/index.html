@@ -73,24 +73,6 @@
 
 
   <script>
-    var socket = io();
-    socket.on('temperature', function(data){
-      console.log(data);
-      var now = new Date();
-      $('#'+data.type).text(data.temperature);
-      $('.time').text(now);
-    });
-  </script>
-
-  <script>
-    var socket = io();
-    socket.on('dump', function(data){
-      
-    });
-  </script>
-
-
-  <script>
 
 
     var data = {
@@ -150,12 +132,22 @@
           //Do something
       }      
       
-      
-      
     });
    
     
   </script>
+
+
+  <script>
+    var socket = io();
+    socket.on('temperature', function(data){
+      console.log(data);
+      var now = new Date();
+      $('#'+data.type).text(data.temperature);
+      $('.time').text(now);      
+    });
+  </script>
+
   </body>
 </html>
 
