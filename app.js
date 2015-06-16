@@ -49,6 +49,13 @@ console.log('Hostname: '+hostname)
   If on the Pi, read the sensors and save to DB.
 **/
 
+function addTempToDb(sensor, temp) {
+  var tempData = { 'sensorId': item, 'date': Date.now(), 'temperature': value  };
+  db.temperature.insert(tempData, function (err, newDocs) {
+    console.log(tempData);
+  });
+};
+
 if (hostname === 'raspberrypi') { 
   var ds18b20 = require('ds18b20');
   var mySensors = ds18b20.sensors(function(err, ids) {
@@ -68,17 +75,24 @@ if (hostname === 'raspberrypi') {
                   console.log('Oops, something bad happened!');
                   return;
               }
+              // @sensor, @temp)
+              addTempToDb(item, value);
               //console.log('Current temperature is', value);
-                var tempData = { 'sensorId': item, 'date': Date.now(), 'temperature': value  };
-                db.temperature.insert(tempData, function (err, newDocs) {
-                console.log(tempData);
         // newDocs is an array with these documents, augmented with their _id
-        });
-        
-           });
+            });
         });
     }, 5000);
   });
+}
+
+else {
+    setInterval(function(){
+              // @sensor, @date, @temp)
+              addTempToDb(sensors.[_.random(0, 1)].id, _.random(10, 30));
+              //console.log('Current temperature is', value);
+        // newDocs is an array with these documents, augmented with their _id
+        
+    }, 5000);  
 }
 
 
@@ -88,7 +102,7 @@ function prepareData(item) {
 
       data = {
         'date': tempDate,
-        'temperature': item.temperature,
+        'temperature': Number((item.temperature).toFixed(1)),
         'name': sensor.name,
         'type': sensor.type,
       };
@@ -122,7 +136,7 @@ allData();
 
 setInterval(function(){
   var query = {};
-  var r = _.random(0, 1000);
+  var r = _.random(0, 20);
   
   //db.temperature.find({sensorId: { $in: _.pluck(sensors, 'id')}}).sort({date: -1}).limit(2).exec(function (err, docs) {
   db.temperature.find(query).limit(1).skip(r).exec(function (err, docs) {
@@ -139,7 +153,7 @@ setInterval(function(){
     });      
   });    
 
-}, 1000);
+}, 5000);
   
 io.on('connection', function(socket){
   console.log('a user connected');
@@ -152,7 +166,6 @@ io.on('connection', function(socket){
   });
 
 });
-
 
 http.listen(3000, function(){
   console.log('listening on 0:3000');
