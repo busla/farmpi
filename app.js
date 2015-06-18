@@ -50,7 +50,7 @@ console.log('Hostname: '+hostname)
 **/
 
 function addTempToDb(sensor, temp) {
-  var tempData = { 'sensorId': item, 'date': Date.now(), 'temperature': value  };
+  var tempData = { 'sensorId': sensor, 'date': Date.now(), 'temperature': temp  };
   db.temperature.insert(tempData, function (err, newDocs) {
     console.log(tempData);
   });
@@ -88,7 +88,7 @@ if (hostname === 'raspberrypi') {
 else {
     setInterval(function(){
               // @sensor, @date, @temp)
-              addTempToDb(sensors.[_.random(0, 1)].id, _.random(10, 30));
+              addTempToDb(sensors[_.random(0, 1)].id, _.random(10, 30));
               //console.log('Current temperature is', value);
         // newDocs is an array with these documents, augmented with their _id
         
