@@ -5,12 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Bootstrap 101 Template</title>
+    <title>FarmPi - Reykjalundur</title>
 
-    <!-- Bootstrap -->
+    <!-- Bootstrap Theme file-->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
-    <link href="weather-icons/css/weather-icons.css" rel="stylesheet">
+    <link href="weather-icons/css/weather-icons.min.css" rel="stylesheet">
+    <link href="jquery-ui/themes/smoothness/jquery-ui.min.css" rel="stylesheet">
+    <link href="jquery-ui-daterangepicker/jquery.comiseo.daterangepicker.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -60,23 +62,80 @@
       </div>
     </div>
   </div>
-  <div class="row">
+  <div class="row">    
+    <div class="col-xs-12">
+      <center><input id="chartDatePicker" name="chartDatePicker"></center>
+    </div>
+  </div>  
+  <div class="row">    
     <div class="col-xs-12">
       <canvas id="tempChart"></canvas>
     </div>
   </div>
 </div>
-  <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>   
-  <script src="Chart.js/Chart.min.js"></script>   
 
+
+  <script src="socket.io-client/socket.io.js"></script>
+  <script src="jquery/dist/jquery.min.js"></script>
+  <script src="bootstrap/dist/js/bootstrap.min.js"></script>   
+  <script src="Chart.js/Chart.min.js"></script>   
+  <script src="jquery-ui/jquery-ui.min.js"></script>
+  <script src="moment/min/moment.min.js"></script>
+  <script src="jquery-ui-daterangepicker/jquery.comiseo.daterangepicker.min.js"></script>
 
   <script>
+    
+ $("#chartDatePicker").daterangepicker({
+     datepickerOptions : {
+         numberOfMonths : 2
+     }
+ });
 
 
-    var data = {
-        labels: [],
+function getData(dateRange) { 
+  $.getJSON( "api/chart", function( records ) {
+    var airData = [];
+    var soilData = [];
+    var tempDate = [];
+      
+      $.each( records, function(i, item) {
+        console.log(item);
+        item.sensors.forEach(function(sensor) { 
+          if (sensor.type == 'soil') {
+            soilData.push(sensor.currentTemp);          
+          }
+          else {
+            airData.push(sensor.currentTemp);
+          }
+        
+        });
+        tempDate.push(item.date)
+          
+      });
+      
+      /*
+      for (var i = 0; i < (soilData.length); i++) {
+          myLineChart.addData([soilData[i], airData[i]], tempDate[i]);
+          //Do something
+      }      
+      */
+      chartObj = {'soil': soilData, 'air': airData, 'date': tempDate };
+      console.log(chartObj);
+      constructChart(chartObj);  
+      //console.log(dataObj);
+       
+    });
+  
+  // When request is done do something here
+ } 
+
+getData();
+  
+function constructChart(tempObj) {
+  console.log($.map(tempObj.date, function(n){return n}));
+
+  var data = {
+        labels: $.map(tempObj.date, function(n){return n}),
         datasets: [
             {
                 label: "Air temperature",
@@ -86,7 +145,7 @@
                 pointStrokeColor: "#fff",
                 pointHighlightFill: "#fff",
                 pointHighlightStroke: "rgba(220,220,220,1)",
-                data: [],
+                data: $.map(tempObj.air, function(n){return n}),
             },
             {
                 label: "Soil temperature",
@@ -96,55 +155,31 @@
                 pointStrokeColor: "#fff",
                 pointHighlightFill: "#fff",
                 pointHighlightStroke: "rgba(151,187,205,1)",
-                data: [],
+                data: $.map(tempObj.soil, function(n){return n}),
             }
+
         ]
     };    
 
-    
     Chart.defaults.global.responsive = true;
     var ctx = $("#tempChart").get(0).getContext("2d");
     // This will get the first returned node in the jQuery collection.
     var myLineChart = new Chart(ctx).Line(data);
-    
+}     
 
-    var airData = [];
-    var soilData = [];
-    var tempDate = [];
-
-    $.getJSON( "data/charts.json", function( jsonFile ) {
-      
-      $.each( jsonFile, function(i, value) {
-        if (value.type == 'soil') {
-          soilData.push(value.temperature);          
-        }
-
-        else {
-          airData.push(value.temperature);
-        }
-
-        tempDate.push(value.date)        
-        
-        console.log(value.date);  
-      });
-      for (var i = 0; i < (soilData.length - 10); i++) {
-          myLineChart.addData([soilData[i], airData[i]], tempDate[i]);
-          //Do something
-      }      
-      
-    });
-   
-    
   </script>
 
 
   <script>
     var socket = io();
-    socket.on('temperature', function(data){
-      console.log(data);
+    socket.on('temperature', function(sensors){
+      //console.log(data);
       var now = new Date();
-      $('#'+data.type).text(data.temperature);
-      $('.time').text(now);      
+      sensors.forEach(function(sensor) {  
+        $('#'+sensor.type).text(sensor.currentTemp);
+      });    
+
+      $('.time').text(now);
     });
   </script>
 
