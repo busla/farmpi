@@ -172,13 +172,12 @@ function constructChart(tempObj) {
 
   <script>
     var socket = io();
-    socket.on('temperature', function(sensors){
-      //console.log(data);
+    socket.on('temperature', function(sensors){      
       var now = new Date();
-      sensors.forEach(function(sensor) {  
-        $('#'+sensor.type).text(sensor.currentTemp);
-      });    
-
+        sensors.forEach(function(sensor) { 
+          console.log(sensor.id);
+          $('#'+sensor.type).text(sensor.currentTemp);          
+        });
       $('.time').text(now);
     });
   </script>
