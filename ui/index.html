@@ -91,6 +91,9 @@
      }
  });
 
+$("#chartDatePicker").click(function(e) {
+  console.log(e.val());
+})
 
 function getData(dateRange) { 
   $.getJSON( "api/chart", function( records ) {
