@@ -157,7 +157,7 @@ function getTemperature(sensorIds, callback) {
       
   // Global variable
   sensors = sensorsArr;
-  console.log('sensorsArr' + sensorsArr);      
+  console.log(JSON.stringify(sensorsArr, null, 4));
   callback(sensorsArr);
 }
 
