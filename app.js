@@ -122,7 +122,7 @@ function getSensors(sensorIds, callback) {
 };
     
 function getTemperature(sensorIds, callback) {
-  var sensorsArr = []
+  sensors = []
   sensorIds.forEach(function(sensor) {
     
     if (hostname === 'raspberrypi') {
@@ -135,7 +135,7 @@ function getTemperature(sensorIds, callback) {
         }
         sensorType = _.findWhere(sensorTypes, {'id': sensor});        
         
-        sensorsArr.push({
+        sensors.push({
           'id': sensor, 
           'type': sensorType.type,
           'currentTemp': value,
@@ -143,14 +143,14 @@ function getTemperature(sensorIds, callback) {
 
         console.log('Sensor id:' + sensor);
         console.log('Sensor value:' + value);
-        console.log('sensorsArr inside: '+ JSON.stringify(sensorsArr, null, 4));
+        console.log('sensorsArr inside: '+ JSON.stringify(sensors, null, 4));
       });          
     }
 
     else {
       sensorType = _.findWhere(sensorTypes, {'id': sensor});
       
-      sensorsArr.push({
+      sensors.push({
         'id': sensor, 
         'type': sensorType.type,
         'currentTemp': _.random(10, 30), 
@@ -161,9 +161,9 @@ function getTemperature(sensorIds, callback) {
 
       
   // Global variable
-  sensors = sensorsArr;
-  console.log('Sensor array outside: '+JSON.stringify(sensorsArr, null, 4));
-  callback(sensorsArr);
+  
+  console.log('Sensor array outside: '+JSON.stringify(sensors, null, 4));
+  callback(sensors);
 }
 
 setInterval(function(){
