@@ -8,8 +8,9 @@ var _ = require('underscore');
 var fs = require('fs');
 var router = express.Router();
 var moment = require('moment');
+var ds18b20 = require('ds18b20');
 moment().format(); 
- 
+
 
 router.get('/', function(req, res) {
     res.json({ message: 'hooray! welcome to our api!' });   
@@ -91,8 +92,7 @@ function addTempToDb(sensorsArr, callback) {
 
 function getSensors(sensorIds, callback) {
   
-  if (sensorIds < 0) {
-    var ds18b20 = require('ds18b20');
+  if (sensorIds < 0) {    
     var mySensors = ds18b20.sensors(function(err, ids) {
       if (err) {
         console.log('No sensors found :-(');
