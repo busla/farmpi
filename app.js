@@ -122,23 +122,28 @@ function getSensors(sensorIds, callback) {
 };
     
 function getTemperature(sensorIds, callback) {
-  sensorsArr = []    
+  var sensorsArr = ['root']
   sensorIds.forEach(function(sensor) {
+    console.log(sensorsArr[0] + ' level 1')
     if (hostname === 'raspberrypi') {
+      console.log(sensorsArr[0] + ' level 2')
       ds18b20.temperature(sensor, function(err, value) {
+        console.log(sensorsArr[0] + ' level 3')
         if (err) {
             console.log('Couldn ´t get temperature from sensors :-(');
             return;
         }
-        sensorType = _.findWhere(sensorTypes, {'id': sensor});
-        
+        sensorType = _.findWhere(sensorTypes, {'id': sensor});        
         
         sensorsArr.push({
           'id': sensor, 
           'type': sensorType.type,
           'currentTemp': value,
         });
+
         console.log('Sensor id:' + sensor);
+        console.log('Sensor value:' + value);
+        console.log('sensorsArr inside: '+ JSON.stringify(sensorsArr, null, 4));
       });          
     }
 
@@ -150,7 +155,7 @@ function getTemperature(sensorIds, callback) {
         'type': sensorType.type,
         'currentTemp': _.random(10, 30), 
       });      
-      console.log('Sensor id:' + sensor);
+      
     }
   }); // Get temperature
 
