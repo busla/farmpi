@@ -11,8 +11,8 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
     <link href="weather-icons/css/weather-icons.min.css" rel="stylesheet">
-    <link href="jquery-ui/themes/smoothness/jquery-ui.min.css" rel="stylesheet">
-    <link href="jquery-ui-daterangepicker/jquery.comiseo.daterangepicker.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="bootstrap-daterangepicker/daterangepicker-bs3.css" />
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -64,7 +64,12 @@
   </div>
   <div class="row">    
     <div class="col-xs-12">
-      <center><input id="chartDatePicker" name="chartDatePicker"></center>
+      
+        <div id="reportrange" class="pull-right" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
+            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+            <span></span> <b class="caret"></b>
+        </div>
+      
     </div>
   </div>  
   <div class="row">    
@@ -75,28 +80,72 @@
 </div>
 
 
-  <script src="socket.io-client/socket.io.js"></script>
-  <script src="jquery/dist/jquery.min.js"></script>
-  <script src="bootstrap/dist/js/bootstrap.min.js"></script>   
-  <script src="Chart.js/Chart.min.js"></script>   
-  <script src="jquery-ui/jquery-ui.min.js"></script>
-  <script src="moment/min/moment.min.js"></script>
-  <script src="jquery-ui-daterangepicker/jquery.comiseo.daterangepicker.min.js"></script>
+<script src="socket.io-client/socket.io.js"></script>
+<script src="jquery/dist/jquery.min.js"></script>
+<script src="bootstrap/dist/js/bootstrap.min.js"></script>   
+<script src="Chart.js/Chart.min.js"></script>   
+<script src="jquery-ui/jquery-ui.min.js"></script>
+<script src="moment/min/moment.min.js"></script>
+<script type="text/javascript" src="bootstrap-daterangepicker/daterangepicker.js"></script>
+
+    
+<script type="text/javascript">
+$(function() {
+ 
+    $('#reportrange span').html(moment().subtract(29, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+ 
+    $('#reportrange').daterangepicker({
+        format: 'MM/DD/YYYY',
+        startDate: moment().subtract(29, 'days'),
+        endDate: moment(),
+        minDate: '01/01/2012',
+        maxDate: '12/31/2015',
+        dateLimit: { days: 60 },
+        showDropdowns: true,
+        showWeekNumbers: true,
+        timePicker: false,
+        timePickerIncrement: 1,
+        timePicker12Hour: true,
+        ranges: {
+           'Today': [moment(), moment()],
+           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+           'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+           'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+           'This Month': [moment().startOf('month'), moment().endOf('month')],
+           'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        },
+        opens: 'left',
+        drops: 'down',
+        buttonClasses: ['btn', 'btn-sm'],
+        applyClass: 'btn-primary',
+        cancelClass: 'btn-default',
+        separator: ' to ',
+        locale: {
+            applyLabel: 'Submit',
+            cancelLabel: 'Cancel',
+            fromLabel: 'From',
+            toLabel: 'To',
+            customRangeLabel: 'Custom',
+            daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr','Sa'],
+            monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            firstDay: 1
+        }
+    }, function(start, end, label) {
+        getData([start, end]);
+        console.log(start.toISOString(), end.toISOString(), label);
+        $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+    });
+ 
+});
+</script>
+
 
   <script>
-    
- $("#chartDatePicker").daterangepicker({
-     datepickerOptions : {
-         numberOfMonths : 2
-     }
- });
 
-$("#chartDatePicker").click(function(e) {
-  console.log(e.val());
-})
+
 
 function getData(dateRange) { 
-  $.getJSON( "api/chart", function( records ) {
+  $.getJSON( "api/chart", dateRange, function( records ) {
     var airData = [];
     var soilData = [];
     var tempDate = [];
