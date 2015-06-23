@@ -138,7 +138,7 @@ $(function() {
         console.log(start.format(), end.format(), label);
         $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
     });
- 
+    getData({'from' : moment().startOf('month').format(), 'to' : moment().format()});
 });
 </script>
 
@@ -187,8 +187,6 @@ function getData(dateRange) {
   // When request is done do something here
  } 
 
-getData();
-  
 function constructChart(tempObj) {
   //console.log($.map(tempObj.date, function(n){return n}));
 

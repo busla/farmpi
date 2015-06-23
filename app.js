@@ -131,24 +131,26 @@ function getTemperature(sensorIds, callback) {
             return;
         }
         sensorType = _.findWhere(sensorTypes, {'id': sensor});
-
-        console.log('Temperature:' + value);                            
-
+        
+        
         sensorsArr.push({
           'id': sensor, 
           'type': sensorType.type,
           'currentTemp': value,
         });
+        console.log('Sensor id:' + sensor);
       });          
     }
 
     else {
       sensorType = _.findWhere(sensorTypes, {'id': sensor});
+      
       sensorsArr.push({
         'id': sensor, 
         'type': sensorType.type,
         'currentTemp': _.random(10, 30), 
       });      
+      console.log('Sensor id:' + sensor);
     }
   }); // Get temperature
 
