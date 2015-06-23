@@ -122,13 +122,13 @@ function getSensors(sensorIds, callback) {
 };
     
 function getTemperature(sensorIds, callback) {
-  var sensorsArr = ['root']
+  var sensorsArr = []
   sensorIds.forEach(function(sensor) {
-    console.log(sensorsArr[0] + ' level 1')
+    
     if (hostname === 'raspberrypi') {
-      console.log(sensorsArr[0] + ' level 2')
+      
       ds18b20.temperature(sensor, function(err, value) {
-        console.log(sensorsArr[0] + ' level 3')
+      
         if (err) {
             console.log('Couldn ´t get temperature from sensors :-(');
             return;
@@ -162,7 +162,7 @@ function getTemperature(sensorIds, callback) {
       
   // Global variable
   sensors = sensorsArr;
-  console.log(JSON.stringify(sensorsArr, null, 4));
+  console.log('Sensor array outside: '+JSON.stringify(sensorsArr, null, 4));
   callback(sensorsArr);
 }
 
