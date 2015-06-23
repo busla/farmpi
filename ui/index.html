@@ -92,11 +92,11 @@
 <script type="text/javascript">
 $(function() {
  
-    $('#reportrange span').html(moment().subtract(29, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+    $('#reportrange span').html(moment().subtract(1, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
  
     $('#reportrange').daterangepicker({
         format: 'MM/DD/YYYY',
-        startDate: moment().subtract(29, 'days'),
+        startDate: moment().subtract(1, 'days'),
         endDate: moment(),
         minDate: '01/01/2012',
         maxDate: '12/31/2015',
@@ -105,10 +105,12 @@ $(function() {
         showWeekNumbers: true,
         timePicker: false,
         timePickerIncrement: 1,
-        timePicker12Hour: true,
+        timePicker12Hour: false,
         ranges: {
+
            'Today': [moment(), moment()],
            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+           'Last 3 days': [moment().subtract(3, 'days'), moment()],
            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
            'This Month': [moment().startOf('month'), moment().endOf('month')],
@@ -131,8 +133,8 @@ $(function() {
             firstDay: 1
         }
     }, function(start, end, label) {
-        getData([start, end]);
-        console.log(start.toISOString(), end.toISOString(), label);
+        getData({'from' : start.format(), 'to' : end.format()});
+        console.log(start.format(), end.format(), label);
         $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
     });
  
@@ -145,14 +147,17 @@ $(function() {
 
 
 function getData(dateRange) { 
+  console.log('Date range: ' + dateRange)
   $.getJSON( "api/chart", dateRange, function( records ) {
     var airData = [];
     var soilData = [];
     var tempDate = [];
       
-      $.each( records, function(i, item) {
-        console.log(item);
-        item.sensors.forEach(function(sensor) { 
+      for (i = 0; i < records.length; i+=12) { 
+        console.log(records[i]);
+      //$.each( records, function(i, item) {
+        //console.log(item);
+        records[i].sensors.forEach(function(sensor) { 
           if (sensor.type == 'soil') {
             soilData.push(sensor.currentTemp);          
           }
@@ -161,9 +166,9 @@ function getData(dateRange) {
           }
         
         });
-        tempDate.push(item.date)
+        tempDate.push(moment(records[i].date));
           
-      });
+      };
       
       /*
       for (var i = 0; i < (soilData.length); i++) {
@@ -172,7 +177,7 @@ function getData(dateRange) {
       }      
       */
       chartObj = {'soil': soilData, 'air': airData, 'date': tempDate };
-      console.log(chartObj);
+      //console.log(chartObj);
       constructChart(chartObj);  
       //console.log(dataObj);
        
@@ -184,7 +189,7 @@ function getData(dateRange) {
 getData();
   
 function constructChart(tempObj) {
-  console.log($.map(tempObj.date, function(n){return n}));
+  //console.log($.map(tempObj.date, function(n){return n}));
 
   var data = {
         labels: $.map(tempObj.date, function(n){return n}),
@@ -227,7 +232,7 @@ function constructChart(tempObj) {
     socket.on('temperature', function(sensors){      
       var now = new Date();
         sensors.forEach(function(sensor) { 
-          console.log(sensor.id);
+          //console.log(sensor.id);
           $('#'+sensor.type).text(sensor.currentTemp);          
         });
       $('.time').text(now);

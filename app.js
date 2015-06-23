@@ -28,8 +28,19 @@ router.route('/chart')
     
     // get all the bears (accessed at GET http://localhost:8080/api/bears)
     .get(function(req, res) {
-      console.log(req);
-      var query = {date : {$gt: moment().startOf("hour").toDate().getTime()}}
+      console.log('From: '+req.query.from);
+      console.log('To: '+req.query.from);
+      
+      //from = moment().startOf('hour').toDate().getTime();
+      //to = moment().startOf('minute').toDate().getTime();
+      from = moment(req.query.from).toDate().getTime();
+      to = moment(req.query.to).toDate().getTime();
+
+      var query = {date : {
+        $gt: from,
+        $lt: to, 
+      }}
+      console.log('Query: ' + query);
       var chartData = [];
       
       var d = new Date; 
@@ -240,11 +251,11 @@ setInterval(function(){
  */ 
 io.on('connection', function(socket){
   console.log('a user connected');
+  io.emit('temperature', sensors);
   setInterval(function(){
     sensors.forEach(function(item) {
       console.log('IO => '+ item.type+': ' + item.currentTemp)
     });
-    
     io.emit('temperature', sensors);
   }, 10000);
 
