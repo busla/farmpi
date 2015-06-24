@@ -91,6 +91,8 @@ console.log('Hostname: '+hostname)
 
 function addTempToDb(sensorsArr, callback) {
   var tempData = { 'sensors': sensorsArr, 'date': Date.now()};
+  sensors = tempData;
+  
   db.temperature.insert(tempData, function (err, newDocs) {
     if (err) {
       console.log('Could not save sensors to DB');  
@@ -101,161 +103,52 @@ function addTempToDb(sensorsArr, callback) {
   });
 };
 
-function getSensors(sensorIds, callback) {
-  
-  if (sensorIds < 0) {    
-    var mySensors = ds18b20.sensors(function(err, ids) {
-      if (err) {
-        console.log('No sensors found :-(');
-        return;
-      }
-      console.log('Found sensors with id: '+ ids);
-      callback(ids);
-    });      
-  }
-
-  else {
-    console.log(callback);
-    callback(sensorIds, addTempToDb);
-  }
-
-};
-    
 function getTemperature(sensorIds, callback) {
-  sensors = []
+  var sensorArr = []
+
   sensorIds.forEach(function(sensor) {
-    
-    if (hostname === 'raspberrypi') {
-      
+
       ds18b20.temperature(sensor, function(err, value) {
       
         if (err) {
             console.log('Couldn ´t get temperature from sensors :-(');
             return;
         }
+
         sensorType = _.findWhere(sensorTypes, {'id': sensor});        
         
-        sensors.push({
+        sensorArr.push({
           'id': sensor, 
           'type': sensorType.type,
           'currentTemp': value,
         });
 
-        console.log('Sensor id:' + sensor);
-        console.log('Sensor value:' + value);
-        console.log('sensorsArr inside: '+ JSON.stringify(sensors, null, 4));
+        console.log('Inside: '+sensorArr)
       });          
-    }
+  }); // forEach ends
+  console.log('Outside: '+sensorArr)
 
-    else {
-      sensorType = _.findWhere(sensorTypes, {'id': sensor});
-      
-      sensors.push({
-        'id': sensor, 
-        'type': sensorType.type,
-        'currentTemp': _.random(10, 30), 
-      });      
-      
-    }
-  }); // Get temperature
-
-      
-  // Global variable
-  
-  console.log('Sensor array outside: '+JSON.stringify(sensors, null, 4));
-  callback(sensors);
+  return sensorArr;
 }
 
 setInterval(function(){
-  getSensors(_.pluck(sensorTypes, 'id'), getTemperature);
+    ds18b20.sensors(function(err, ids) {
+      if (err) {
+        console.log('No sensors found :-(');
+        return;
+      }
+      console.log('Found sensors with id: '+ ids);
+
+      getTemperature(ids, function(values){
+        console.log('getTemperature values: '+values)
+        addTempToDb(values);
+      })     
+
+    })
+
 }, 5000);
  
-/*
-else {
-    setInterval(function(){
-      sensorsArr = [];
-              // @sensor, @date, @temp)
-      ['28-000006a36dbe', '28-000006a3684e'].forEach(function(sensor) {    
-        sensorTypes.forEach(function(item) {
-          if (sensor === item.id) {
-            console.log('Sensor ID found: '+item.id);
 
-            sensorType = _.findWhere(sensorTypes, {'id': sensor});
-            console.log(sensorType);
-            sensorsArr.push({
-              'id': sensor, 
-              'type': sensorType.type,
-              'currentTemp': _.random(10, 30),          
-            });
-          }
-        });
-      });
-      sensors = sensorsArr;
-      console.log(sensorsArr);
-      addTempToDb(sensorsArr);
-    }, 5000);  
-}
-*/
-/*
-function prepareData(item) {
-      var tempDate = new Date(item.date);
-      sensor = _.findWhere(sensors, {'id': item.sensorId})
-
-      data = {
-        'date': tempDate,
-        'temperature': Number((item.temperature).toFixed(1)),        
-        'type': sensor.type,
-      };
-      return data;  
-}
-*/
-
-/*
-var allData = function dumpData() {
-  var chartData = []
-
-  db.temperature.find({}).sort({date: 1}).exec(function (err, docs) {
-    
-    docs.forEach(function(item) {      
-      data = prepareData(item);
-      chartData.push(data);
-    });
-    var str = JSON.stringify(chartData);
-    
-    fs.writeFile("data/charts.json", str, function(err) {
-        if(err) {
-            return console.log(err);
-        }
-
-        console.log("The file was saved!");
-    });
-
-  });  
-  
-}
-
-allData();
-
-setInterval(function(){
-  var query = {};
-  var r = _.random(0, 20);
-  //db.temperature.find({sensorId: { $in: _.pluck(sensors, 'id')}}).sort({date: -1}).limit(2).exec(function (err, docs) {
-  db.temperature.find(query).limit(1).skip(r).exec(function (err, docs) {
-    docs.forEach(function(item) {
-
-      data = prepareData(item);
-
-      console.log('#################################');
-      console.log("Sensor: " + data.name);
-      console.log("Type: " + data.type);
-      console.log("Temperature: " + data.temperature);
-      console.log("Date: "+ (data.date));      
-      currentTemp = data;
-    });      
-  });    
-
-}, 5000);
- */ 
 io.on('connection', function(socket){
   console.log('a user connected');
   io.emit('temperature', sensors);
