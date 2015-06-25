@@ -132,6 +132,7 @@ setInterval(function(){
 
       }); // forEach ends
       console.log('Outside: '+sensorArr)
+      sensors = sensorArr;
       addTempToDb(sensorArr);
 
     })
