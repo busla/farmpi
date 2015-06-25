@@ -142,13 +142,14 @@ setInterval(function(){
 
 io.on('connection', function(socket){
   console.log('a user connected');
-  io.emit('temperature', sensors);
-  setInterval(function(){
+  if sensors.length > 0 {
+  setInterval(function(){    
     sensors.forEach(function(item) {
       console.log('IO => '+ item.type+': ' + item.currentTemp)
     });
     io.emit('temperature', sensors);
-  }, 10000);
+  }, 1000);
+  }
 
   socket.on('disconnect', function(){
     console.log('user disconnected');
