@@ -142,7 +142,7 @@ setInterval(function(){
 
 io.on('connection', function(socket){
   console.log('a user connected');
-  if sensors.length > 0 {
+  if (sensors.length > 0) {
   setInterval(function(){    
     sensors.forEach(function(item) {
       console.log('IO => '+ item.type+': ' + item.currentTemp)
