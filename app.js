@@ -108,6 +108,8 @@ function getTemperature(sensor, callback) {
               console.log('Couldn ´t get temperature from sensors :-(');
               return;
           }          
+          console.log('Sensor: '+sensor);
+          console.log('Value: '+value);
           return value;
         });          
 };     
@@ -124,12 +126,13 @@ setInterval(function(){
 
       ids.forEach(function(sensor) {
           sensorType = _.findWhere(sensorTypes, {'id': sensor});
-          sensorArr.push({
-            'id': sensor, 
-            'type': sensorType.type,
-            'currentTemp': getTemperature(sensor),
+          getTemperature(sensor, function(value) {
+            sensorArr.push({
+              'id': sensor, 
+              'type': sensorType.type,
+              'currentTemp': value,
+            });
           });
-
       }); // forEach ends
       console.log('Outside: '+sensorArr)
       sensors = sensorArr;
