@@ -92,7 +92,7 @@ console.log('Hostname: '+hostname)
 function addTempToDb(sensorsArr, callback) {
   var tempData = { 'sensors': sensorsArr, 'date': Date.now()};
   sensors = tempData;
-  
+
   db.temperature.insert(tempData, function (err, newDocs) {
     if (err) {
       console.log('Could not save sensors to DB');  
@@ -102,36 +102,17 @@ function addTempToDb(sensorsArr, callback) {
     return;
   });
 };
-
-function getTemperature(sensorIds, callback) {
-  var sensorArr = []
-
-  sensorIds.forEach(function(sensor) {
-
-      ds18b20.temperature(sensor, function(err, value) {
-      
-        if (err) {
-            console.log('Couldn ´t get temperature from sensors :-(');
-            return;
-        }
-
-        sensorType = _.findWhere(sensorTypes, {'id': sensor});        
-        
-        sensorArr.push({
-          'id': sensor, 
-          'type': sensorType.type,
-          'currentTemp': value,
-        });
-
-        console.log('Inside: '+sensorArr)
-      });          
-  }); // forEach ends
-  console.log('Outside: '+sensorArr)
-
-  return sensorArr;
-}
-
+function getTemperature(sensor, callback) {
+        ds18b20.temperature(sensor, function(err, value) {        
+          if (err) {
+              console.log('Couldn ´t get temperature from sensors :-(');
+              return;
+          }          
+          return value;
+        });          
+};     
 setInterval(function(){
+
     ds18b20.sensors(function(err, ids) {
       if (err) {
         console.log('No sensors found :-(');
@@ -139,10 +120,19 @@ setInterval(function(){
       }
       console.log('Found sensors with id: '+ ids);
 
-      getTemperature(ids, function(values){
-        console.log('getTemperature values: '+values)
-        addTempToDb(values);
-      })     
+      sensorArr = [];
+
+      ids.forEach(function(sensor) {
+          sensorType = _.findWhere(sensorTypes, {'id': sensor});
+          sensorArr.push({
+            'id': sensor, 
+            'type': sensorType.type,
+            'currentTemp': getTemperature(sensor),
+          });
+
+      }); // forEach ends
+      console.log('Outside: '+sensorArr)
+      addTempToDb(sensorArr);
 
     })
 
