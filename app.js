@@ -140,8 +140,12 @@ function getSensors(callback) {
           // Find the user defined sensor type
           sensorType = _.findWhere(sensorTypes, {'id': sensor})
           
+          temperature = getTemperature(sensor)
+          console.log('Value from getTemperature: '+temperature)
 
+          sensorArr.push(createSensorObj(sensorType.id, sensorType.type, value))
           // Create temperature object from values and push to array          
+          /*
           sensorArr.push(getTemperature(sensor, function(value) {
               console.log('Sensor: '+sensor);
               console.log('Value: '+value);
@@ -149,6 +153,7 @@ function getSensors(callback) {
               console.log('After push to createSensorObj: '+sensorArr)
             })
           ) 
+          */
 
       }) // forEach ends
 
@@ -160,7 +165,7 @@ function getSensors(callback) {
 }
 
 setInterval(function(){
-  getSensors(function(items) {
+  getSensors(function(items) {    
     console.log('Interval: '+ items)
     addTempToDb(items);
   })
