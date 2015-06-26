@@ -109,8 +109,9 @@ function getTemperature(sensor, callback) {
         console.log('Couldn ´t get temperature from sensors :-(')
         return
     }       
+    sensorType = _.findWhere(sensorTypes, {'id': sensor})
     console.log('Inside getTemperature: '+ value)   
-    return createSensorObj(sensorType.id, sensorType.type, temperature)
+    return createSensorObj(sensorType.id, sensorType.type, value)
     
   })    
 };     
@@ -137,7 +138,7 @@ function getSensors(callback) {
       var sensorArr = []
       ids.forEach(function(sensor) {
           // Find the user defined sensor type
-          sensorType = _.findWhere(sensorTypes, {'id': sensor})
+          
           
           sensorArr.push(getTemperature(sensor))
           console.log('forEach sensorArr: '+sensorArr)
