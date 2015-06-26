@@ -102,6 +102,7 @@ function addTempToDb(sensorsArr, callback) {
     return;
   });
 };
+
 function getTemperature(sensor, callback) {
         ds18b20.temperature(sensor, function(err, value) {        
           if (err) {
@@ -113,6 +114,8 @@ function getTemperature(sensor, callback) {
           return value;
         });          
 };     
+
+
 setInterval(function(){
 
     ds18b20.sensors(function(err, ids) {
@@ -122,17 +125,26 @@ setInterval(function(){
       }
       console.log('Found sensors with id: '+ ids);
 
-      sensorArr = [];
+      var sensorArr = []
 
+      function addTempToArray(value) {
+        sensorArr.push({
+          'id': sensor, 
+          'type': sensorType.type,
+          'currentTemp': value,
+        });        
+      }
+      
       ids.forEach(function(sensor) {
+          // Find the user defined sensor type
           sensorType = _.findWhere(sensorTypes, {'id': sensor});
+          
+          // Create temperature object from values and push to array
+          
           getTemperature(sensor, function(value) {
-            sensorArr.push({
-              'id': sensor, 
-              'type': sensorType.type,
-              'currentTemp': value,
-            });
+            addTempToArray(sensorType.id, sensorType.type, value)
           });
+
       }); // forEach ends
       console.log('Outside: '+sensorArr)
       sensors = sensorArr;
