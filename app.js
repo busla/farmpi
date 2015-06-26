@@ -103,14 +103,15 @@ function addTempToDb(sensorsArr, callback) {
   });
 };
 
-function getTemperature(sensor) {
+function getTemperature(sensor, callback) {
   ds18b20.temperature(sensor, function(err, value) {        
     if (err) {
-        console.log('Couldn ´t get temperature from sensors :-(');
-        return;
-    }          
-    return value;
-  });          
+        console.log('Couldn ´t get temperature from sensors :-(')
+        return
+    }       
+    console.log('Inside getTemperature: '+ value)   
+    return value
+  })    
 };     
 
 function createSensorObj(sensorId, sensorType, temperature ) {
@@ -119,37 +120,40 @@ function createSensorObj(sensorId, sensorType, temperature ) {
     'type': sensorType,
     'currentTemp': temperature,
   };
-  console.log('inside createSensorObj: '+ sensorObj);
+  console.log('inside createSensorObj: '+ sensorObj)
   return sensorObj;
 
 }
 
 
-function getSensors() {
+function getSensors(callback) {
     ds18b20.sensors(function(err, ids) {
       if (err) {
-        console.log('No sensors found :-(');
-        return;
+        console.log('No sensors found :-(')
+        return
       }
-      console.log('Found sensors with id: '+ ids);
+      console.log('Found sensors with id: '+ ids)
       
-      var sensorArr = [];
+      var sensorArr = []
 
       ids.forEach(function(sensor) {
           // Find the user defined sensor type
-          sensorType = _.findWhere(sensorTypes, {'id': sensor});
+          sensorType = _.findWhere(sensorTypes, {'id': sensor})
           
-          // Create temperature object from values and push to array          
-          getTemperature(sensor, function(value) {
-            console.log('Sensor: '+sensor);
-            console.log('Value: '+value);
-            sensorArr.push(createSensorObj(sensorType.id, sensorType.type, value));
-            console.log('After push to createSensorObj: '+sensorArr)
-          });
 
-      }); // forEach ends
+          // Create temperature object from values and push to array          
+          sensorArr.push(getTemperature(sensor, function(value) {
+              console.log('Sensor: '+sensor);
+              console.log('Value: '+value);
+              sensorArr.push(createSensorObj(sensorType.id, sensorType.type, value));
+              console.log('After push to createSensorObj: '+sensorArr)
+            })
+          ) 
+
+      }) // forEach ends
+
       console.log('Outside: '+sensorArr)
-      return sensorArr;
+      return sensorArr
       
 
     })
