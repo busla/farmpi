@@ -104,54 +104,60 @@ function addTempToDb(sensorsArr, callback) {
 };
 
 function getTemperature(sensor, callback) {
-        ds18b20.temperature(sensor, function(err, value) {        
-          if (err) {
-              console.log('Couldn ´t get temperature from sensors :-(');
-              return;
-          }          
-          console.log('Sensor: '+sensor);
-          console.log('Value: '+value);
-          return value;
-        });          
+  ds18b20.temperature(sensor, function(err, value) {        
+    if (err) {
+        console.log('Couldn ´t get temperature from sensors :-(');
+        return;
+    }          
+    console.log('Sensor: '+sensor);
+    console.log('Value: '+value);
+    return value;
+  });          
 };     
 
+function createSensorObj(sensorId, sensorType, temperature ) {
 
-setInterval(function(){
+  return {
+    'id': sensorId, 
+    'type': sensorType,
+    'currentTemp': temperature,
+  };        
 
+}
+
+
+function getSensors() {
     ds18b20.sensors(function(err, ids) {
       if (err) {
         console.log('No sensors found :-(');
         return;
       }
       console.log('Found sensors with id: '+ ids);
-
-      var sensorArr = []
-
-      function addTempToArray(value) {
-        sensorArr.push({
-          'id': sensor, 
-          'type': sensorType.type,
-          'currentTemp': value,
-        });        
-      }
       
+      sensorArr = [];
+
       ids.forEach(function(sensor) {
           // Find the user defined sensor type
           sensorType = _.findWhere(sensorTypes, {'id': sensor});
           
-          // Create temperature object from values and push to array
-          
+          // Create temperature object from values and push to array          
           getTemperature(sensor, function(value) {
-            addTempToArray(sensorType.id, sensorType.type, value)
+            sensorArr.push(createSensorObj(sensorType.id, sensorType.type, value));
           });
 
       }); // forEach ends
       console.log('Outside: '+sensorArr)
-      sensors = sensorArr;
-      addTempToDb(sensorArr);
+      return sensorArr;
+      
 
     })
+}
 
+setInterval(function(){
+  getSensors(function(items) {
+    console.log('Interval: '+ items)
+    addTempToDb(items);
+  })
 }, 5000);
  
 
