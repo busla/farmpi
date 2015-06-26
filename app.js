@@ -109,19 +109,18 @@ function getTemperature(sensor, callback) {
         console.log('Couldn ´t get temperature from sensors :-(');
         return;
     }          
-    console.log('Sensor: '+sensor);
-    console.log('Value: '+value);
     return value;
   });          
 };     
 
 function createSensorObj(sensorId, sensorType, temperature ) {
-
-  return {
+  var sensorObj = {
     'id': sensorId, 
     'type': sensorType,
     'currentTemp': temperature,
-  };        
+  };
+  console.log('inside createSensorObj: '+ sensorObj);
+  return sensorObj;
 
 }
 
@@ -134,7 +133,7 @@ function getSensors() {
       }
       console.log('Found sensors with id: '+ ids);
       
-      sensorArr = [];
+      var sensorArr = [];
 
       ids.forEach(function(sensor) {
           // Find the user defined sensor type
@@ -142,7 +141,10 @@ function getSensors() {
           
           // Create temperature object from values and push to array          
           getTemperature(sensor, function(value) {
+            console.log('Sensor: '+sensor);
+            console.log('Value: '+value);
             sensorArr.push(createSensorObj(sensorType.id, sensorType.type, value));
+            console.log('After push to createSensorObj: '+sensorArr)
           });
 
       }); // forEach ends
