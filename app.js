@@ -140,7 +140,7 @@ function getSensors(callback) {
           sensorType = _.findWhere(sensorTypes, {'id': sensor})
           
           sensorArr.push(getTemperature(sensor))
-          console.log('forEach temperature: '+temperature)
+          console.log('forEach sensorArr: '+sensorArr)
           // Create temperature object from values and push to array          
           /*
           sensorArr.push(getTemperature(sensor, function(value) {
