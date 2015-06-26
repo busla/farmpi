@@ -103,7 +103,7 @@ function addTempToDb(sensorsArr, callback) {
   });
 };
 
-function getTemperature(sensor, callback) {
+function getTemperature(sensor) {
   ds18b20.temperature(sensor, function(err, value) {        
     if (err) {
         console.log('Couldn ´t get temperature from sensors :-(');
