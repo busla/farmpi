@@ -42,7 +42,8 @@
             <i class="wi wi-thermometer-internal"></i>
             <div class="caption">
               <h3>Soil temperature</h3>
-              <span id="soil" class="temperature"></span><span class="scale">&deg;C</span>              
+              <span id="soil" class="temperature"></span><span class="scale">&deg;C</span>            
+              <p class="time"></p>
             </div>
           </div>
         </div>
@@ -56,18 +57,13 @@
             <div class="caption">
               <h3>Air temperature</h3>
               <span id="air" class="temperature"></span><span class="scale">&deg;C</span>
+              <p class="time"></p>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="row">    
-    <div class="col-xs-12">
-      
-      <div class="clock"></div>
-      
-    </div>
   <div class="row">    
     <div class="col-xs-12">
       
@@ -93,11 +89,19 @@
 <script src="jquery-ui/jquery-ui.min.js"></script>
 <script src="moment/min/moment.min.js"></script>
 <script type="text/javascript" src="bootstrap-daterangepicker/daterangepicker.js"></script>
+<script type="text/javascript" src="FlipClock/compiled/flipclock.min.js"></script>
 
 <script type="text/javascript">
-  var clock = $('.clock').FlipClock({
-    clockFace: 'TwentyFourHourClock'
-  });
+
+function date_time() {
+  now = moment().format('HH:mm:ss');  
+  $('.time').text(now);
+  setTimeout(function () { date_time(); }, 1000);
+
+}
+
+date_time();
+
 </script>
 
 <script type="text/javascript">
@@ -239,14 +243,15 @@ function constructChart(tempObj) {
   <script>
     var socket = io();
     socket.on('temperature', function(result){            
-      var now = new Date();
+      //var now = new Date();
         result.forEach(function(item) { 
           //console.log('Sensor: '+JSON.stringify(item, null, 4))
           item.sensors.forEach(function(sensor){
-            console.log(JSON.stringify(sensor, null, 4))
+            //console.log(JSON.stringify(sensor, null, 4))
             $('#'+sensor.type).text(sensor.currentTemp.toFixed(1)); 
           })
-        });      
+        });
+
     });
   </script>
 
