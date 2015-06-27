@@ -103,7 +103,7 @@ function addTempToDb(sensorsArr, callback) {
   });
 };
 
-function getTemperature(sensor, callback) {
+function getTemperature(sensor) {
   ds18b20.temperature(sensor, function(err, value) {        
     if (err) {
         console.log('Couldn ´t get temperature from sensors :-(')
@@ -128,7 +128,7 @@ function createSensorObj(sensorId, sensorType, temperature ) {
 }
 
 
-function getSensors(callback) {
+function getSensors() {
     ds18b20.sensors(function(err, ids) {
       if (err) {
         console.log('No sensors found :-(')
@@ -163,10 +163,10 @@ function getSensors(callback) {
 }
 
 setInterval(function(){
-  getSensors(function(items) {    
-    console.log('Interval: '+ items)
-    addTempToDb(items);
-  })
+  var items = getSensors()
+  console.log(items)
+  addTempToDb(items)
+  
 }, 5000);
  
 
