@@ -26,7 +26,6 @@ router.use(function(req, res, next) {
 
 router.route('/chart')
     
-    // get all the bears (accessed at GET http://localhost:8080/api/bears)
     .get(function(req, res) {
       console.log('From: '+req.query.from);
       console.log('To: '+req.query.from);
@@ -54,6 +53,7 @@ router.route('/chart')
       });
     });
 
+
 var sensors = []
 
 var sensorTypes = [
@@ -67,7 +67,16 @@ var sensorTypes = [
   }  
 ]
 
+function getLatestTemp(cb) {
+  db.temperature.find({}).sort({date: -1}).limit(1).exec(function (err, item) {
+        if (err) {
+          console.log(err)
+          return          
+        }
 
+        cb(item)
+  });  
+}
 // Current temperature
 var currentTemp;
 
@@ -91,8 +100,7 @@ console.log('Hostname: '+hostname)
 
 function addTempToDb(sensorsArr, callback) {
   var tempData = { 'sensors': sensorsArr, 'date': Date.now()};
-  sensors = tempData;
-
+  console.log('tempData: %j', tempData)  
   db.temperature.insert(tempData, function (err, newDocs) {
     if (err) {
       console.log('Could not save sensors to DB');  
@@ -103,83 +111,106 @@ function addTempToDb(sensorsArr, callback) {
   });
 };
 
-function getTemperature(sensor) {
+function getTemperature(sensor, cb) {
   ds18b20.temperature(sensor, function(err, value) {        
     if (err) {
         console.log('Couldn ´t get temperature from sensors :-(')
         return
     }       
-    sensorType = _.findWhere(sensorTypes, {'id': sensor})
-    console.log('Inside getTemperature: '+ value)   
-    return createSensorObj(sensorType.id, sensorType.type, value)
+    
+    console.log('Inside getTemperature: '+ value) 
+
+
+    cb(value)
     
   })    
 };     
 
-function createSensorObj(sensorId, sensorType, temperature ) {
+function createSensorObj(sensorId, sensorType, temperature, cb ) {
   var sensorObj = {
     'id': sensorId, 
     'type': sensorType,
     'currentTemp': temperature,
   };
-  console.log('inside createSensorObj: '+ sensorObj)
+  console.log('inside createSensorObj: %j', sensorObj)
   return sensorObj;
 
 }
 
-
-function getSensors() {
+function getSensors(cb) {
     ds18b20.sensors(function(err, ids) {
       if (err) {
         console.log('No sensors found :-(')
         return
       }
-      console.log('Found sensors with id: '+ ids)
-      var sensorArr = []
-      ids.forEach(function(sensor) {
-          // Find the user defined sensor type
-          
-          
-          sensorArr.push(getTemperature(sensor))
-          console.log('forEach sensorArr: '+sensorArr)
-          // Create temperature object from values and push to array          
-          /*
-          sensorArr.push(getTemperature(sensor, function(value) {
-              console.log('Sensor: '+sensor);
-              console.log('Value: '+value);
-              sensorArr.push(createSensorObj(sensorType.id, sensorType.type, value));
-              console.log('After push to createSensorObj: '+sensorArr)
-            })
-          ) 
-          */
-
-      }) // forEach ends
-
-      console.log('Outside: '+sensorArr)
-      return sensorArr
+      console.log('Found sensors with id: %j', ids)
       
-
+      cb(ids)
     })
 }
 
+
+function pushTemp(temp) {
+  sensorArr.push(temp)
+}
+ 
 setInterval(function(){
-  var items = getSensors()
-  console.log(items)
-  addTempToDb(items)
+  var sensorArr = []
+ 
+  getSensors(function(ids){
+    console.log("Sensors: %j", ids) 
+    
+
+    ids.forEach(function(sensor, index, array){
+      
+      getTemperature(sensor, function(temperature) {
+        
+        sensorType = _.findWhere(sensorTypes, {'id': sensor})
+        sensorObj = createSensorObj(sensorType.id, sensorType.type, temperature)
+        console.log('SensorObj inside: %j', sensorObj)
+        sensorArr.push(sensorObj)//pushTemp(sensorObj)
+
+        console.log('sensor: %j', sensor)
+        console.log('index: %j', index)
+        console.log('array length: %j', array.length)
+        console.log('array: %j', array)     
+        console.log('sensorArray: %j', sensorArr)
+          if (index === (array.length -1)) {
+            console.log('Match!')
+            addTempToDb(sensorArr)
+          }
+
+      }) 
+
+    }) 
+    
+        
+  })
+  
+  
+  
+
+  //sensorType = _.findWhere(sensorTypes, {'id': sensor})
+  
+
+  //console.log("Temperature: %j", temperature);
+  //sensorObj = createSensorObj(sensorType.id, sensorType.type, temperature)
+  //addTempToDb(items)
   
 }, 5000);
  
 
 io.on('connection', function(socket){
   console.log('a user connected');
-  if (sensors.length > 0) {
-  setInterval(function(){    
-    sensors.forEach(function(item) {
-      console.log('IO => '+ item.type+': ' + item.currentTemp)
-    });
-    io.emit('temperature', sensors);
-  }, 1000);
-  }
+  
+  setInterval(function(){     
+    getLatestTemp(function(result){
+      console.log('Result: %j', result)
+      io.emit('temperature', result);
+    }) 
+    
+  }, 5000);
+  
 
   socket.on('disconnect', function(){
     console.log('user disconnected');
