@@ -196,7 +196,7 @@ setInterval(function(){
 
   }
  
-}, 5000);
+}, 60000);
  
 
 io.on('connection', function(socket){
@@ -213,7 +213,7 @@ io.on('connection', function(socket){
       io.emit('temperature', result);
     }) 
     
-  }, 5000);
+  }, 60000);
   
 
   socket.on('disconnect', function(){

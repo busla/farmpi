@@ -64,10 +64,8 @@
       
     </div>
   </div>  
-  <div class="row">    
-    <div class="col-xs-12">
-      <canvas id="tempChart"></canvas>
-    </div>
+  <div class="row">
+      <canvas id="tempChart"></canvas>    
   </div>
 </div>
 
@@ -83,21 +81,25 @@
 
 <script type="text/javascript">
 
+var myLineChart = ''
+
+$(document).ready(function() {  
+  getData({'from' : moment().startOf('month').format(), 'to' : moment().format()})
+  date_time();
+})
+
+
 function date_time() {
-  now = moment().format('HH:mm:ss');  
-  $('.time').text(now);
-  setTimeout(function () { date_time(); }, 1000);
+  now = moment().format('HH:mm:ss')
+  $('.time').text(now)
+  setTimeout(function () { date_time() }, 1000)
 
 }
 
-date_time();
 
-</script>
-
-<script type="text/javascript">
 $(function() {
  
-    $('#reportrange span').html(moment().subtract(1, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+    $('#reportrange span').html(moment().subtract(1, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'))
  
     $('#reportrange').daterangepicker({
         format: 'MM/DD/YYYY',
@@ -142,15 +144,9 @@ $(function() {
     }, function(start, end, label) {
         getData({'from' : start.format(), 'to' : end.format()});
         console.log(start.format(), end.format(), label);
-        $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
-    });
-    getData({'from' : moment().startOf('month').format(), 'to' : moment().format()});
+        $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+    });    
 });
-</script>
-
-
-  <script>
-
 
 
 function getData(dateRange) { 
@@ -176,13 +172,7 @@ function getData(dateRange) {
         tempDate.push(moment(records[i].date).format('MMMM Do, h:mm'))
           
       };
-      
-      /*
-      for (var i = 0; i < (soilData.length); i++) {
-          myLineChart.addData([soilData[i], airData[i]], tempDate[i]);
-          //Do something
-      }      
-      */
+
       chartObj = {'soil': soilData, 'air': airData, 'date': tempDate };
       //console.log(chartObj);
       constructChart(chartObj);  
@@ -225,26 +215,29 @@ function constructChart(tempObj) {
 
     Chart.defaults.global.responsive = true;
     var ctx = $("#tempChart").get(0).getContext("2d");
-    // This will get the first returned node in the jQuery collection.
-    var myLineChart = new Chart(ctx).Line(data);
+    
+    window.myLineChart = new Chart(ctx).Line(data);
 }     
 
-  </script>
+var socket = io();
+socket.on('temperature', function(result){            
+  //var now = new Date();
+    //console.log(JSON.stringify(result, null, 4))
+    console.log(window.myLineChart.length)
+    console.log(result[0].sensors[0].currentTemp,result[0].sensors[1].currentTemp, result[0].date)
+    if (window.myLineChart.length > -1) {
 
-
-  <script>
-    var socket = io();
-    socket.on('temperature', function(result){            
-      //var now = new Date();
-        result.forEach(function(item) { 
-          //console.log('Sensor: '+JSON.stringify(item, null, 4))
-          item.sensors.forEach(function(sensor){
-            //console.log(JSON.stringify(sensor, null, 4))
-            $('#'+sensor.type).text(sensor.currentTemp.toFixed(1)); 
-          })
-        });
-
+      window.myLineChart.add(result[0].sensors[0].currentTemp,result[0].sensors[1].currentTemp, result[0].date)
+    }
+    result.forEach(function(item) { 
+      //console.log('Sensor: '+JSON.stringify(item, null, 4))          
+      item.sensors.forEach(function(sensor){
+        
+        $('#'+sensor.type).text(sensor.currentTemp.toFixed(1)); 
+      })
     });
+
+});
   </script>
 
   </body>

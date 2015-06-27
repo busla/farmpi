@@ -14,9 +14,9 @@
     margin: 10px 0;
 }
 .soil-container {
-    background-color: #CC9900;
+    background-color: rgba(151,187,205,0.2);
 }
 
 .air-container {
-    background-color: #99CCFF;
+    background-color: rgba(220,220,220,0.2);
 }
