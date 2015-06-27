@@ -82,7 +82,6 @@
 <script type="text/javascript">
 
 $(document).ready(function() {  
-  getData({'from' : moment().startOf('month').format(), 'to' : moment().format()})
   date_time();
 })
 
@@ -143,7 +142,8 @@ $(function() {
         getData({'from' : start.format(), 'to' : end.format()});
         console.log(start.format(), end.format(), label);
         $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
-    });    
+    }); 
+    getData({'from' : moment().startOf('month').format(), 'to' : moment().format()})   
 });
 
 
