@@ -3,12 +3,16 @@
 TODO: Write a project description
 
 ## Installation
+npm install
+bower install
+npm start
 
-TODO: Describe the installation process
+Start on boot:
+https://www.npmjs.com/package/forever-service
 
 ## Usage
 
-TODO: Write usage instructions
+
 
 ## Contributing
 
