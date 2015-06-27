@@ -81,8 +81,6 @@
 
 <script type="text/javascript">
 
-var myLineChart = ''
-
 $(document).ready(function() {  
   getData({'from' : moment().startOf('month').format(), 'to' : moment().format()})
   date_time();
@@ -216,19 +214,16 @@ function constructChart(tempObj) {
     Chart.defaults.global.responsive = true;
     var ctx = $("#tempChart").get(0).getContext("2d");
     
-    window.myLineChart = new Chart(ctx).Line(data);
+    var myLineChart = new Chart(ctx).Line(data);
 }     
 
 var socket = io();
 socket.on('temperature', function(result){            
   //var now = new Date();
     //console.log(JSON.stringify(result, null, 4))
-    console.log(window.myLineChart.length)
-    console.log(result[0].sensors[0].currentTemp,result[0].sensors[1].currentTemp, result[0].date)
-    if (window.myLineChart.length > -1) {
-
-      window.myLineChart.add(result[0].sensors[0].currentTemp,result[0].sensors[1].currentTemp, result[0].date)
-    }
+    
+    //console.log(result[0].sensors[0].currentTemp,result[0].sensors[1].currentTemp, result[0].date)
+    
     result.forEach(function(item) { 
       //console.log('Sensor: '+JSON.stringify(item, null, 4))          
       item.sensors.forEach(function(sensor){
