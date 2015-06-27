@@ -82,6 +82,7 @@ var currentTemp;
 
 var hostname = require("os").hostname();
 
+
 db = {}
 db.temperature = new Datastore('temperature.db');
 db.temperature.loadDatabase();
@@ -150,54 +151,52 @@ function getSensors(cb) {
 }
 
 
-function pushTemp(temp) {
-  sensorArr.push(temp)
-}
- 
 setInterval(function(){
   var sensorArr = []
+  if (hostname === 'raspberrypi') {
+    getSensors(function(ids){
+      console.log("Sensors: %j", ids) 
+
+      ids.forEach(function(sensor, index, array){
+        
+        getTemperature(sensor, function(temperature) {
+          
+          sensorType = _.findWhere(sensorTypes, {'id': sensor})
+          sensorObj = createSensorObj(sensorType.id, sensorType.type, temperature)
+          console.log('SensorObj inside: %j', sensorObj)
+          sensorArr.push(sensorObj)//pushTemp(sensorObj)
+
+          console.log('sensor: %j', sensor)
+          console.log('index: %j', index)
+          console.log('array length: %j', array.length)
+          console.log('array: %j', array)     
+          console.log('sensorArray: %j', sensorArr)
+            if (index === (array.length -1)) {
+              console.log('Match!')
+              addTempToDb(sensorArr)
+            }
+        }) 
+      })      
+    })
+  } 
+
+  else {
+
+    sensorTypes.forEach(function(sensor, index, array){
+      sensorObj = sensor
+      sensorObj['currentTemp'] = _.random(10, 30)
+      sensorArr.push(sensorObj)
+      console.log(sensorArr)
+
+      if (index === (array.length -1)) {
+        addTempToDb(sensorArr)
+      }
+
+    })
+
+  }
  
-  getSensors(function(ids){
-    console.log("Sensors: %j", ids) 
-    
-
-    ids.forEach(function(sensor, index, array){
-      
-      getTemperature(sensor, function(temperature) {
-        
-        sensorType = _.findWhere(sensorTypes, {'id': sensor})
-        sensorObj = createSensorObj(sensorType.id, sensorType.type, temperature)
-        console.log('SensorObj inside: %j', sensorObj)
-        sensorArr.push(sensorObj)//pushTemp(sensorObj)
-
-        console.log('sensor: %j', sensor)
-        console.log('index: %j', index)
-        console.log('array length: %j', array.length)
-        console.log('array: %j', array)     
-        console.log('sensorArray: %j', sensorArr)
-          if (index === (array.length -1)) {
-            console.log('Match!')
-            addTempToDb(sensorArr)
-          }
-
-      }) 
-
-    }) 
-    
-        
-  })
-  
-  
-  
-
-  //sensorType = _.findWhere(sensorTypes, {'id': sensor})
-  
-
-  //console.log("Temperature: %j", temperature);
-  //sensorObj = createSensorObj(sensorType.id, sensorType.type, temperature)
-  //addTempToDb(items)
-  
-}, 60000);
+}, 5000);
  
 
 io.on('connection', function(socket){
@@ -207,14 +206,14 @@ io.on('connection', function(socket){
     console.log('Result: %j', result)
     io.emit('temperature', result);
   })
-    
+
   setInterval(function(){     
     getLatestTemp(function(result){
       console.log('Result: %j', result)
       io.emit('temperature', result);
     }) 
     
-  }, 60000);
+  }, 5000);
   
 
   socket.on('disconnect', function(){

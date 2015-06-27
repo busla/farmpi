@@ -104,11 +104,11 @@ $(function() {
         startDate: moment().subtract(1, 'days'),
         endDate: moment(),
         minDate: '01/01/2012',
-        maxDate: '12/31/2015',
-        dateLimit: { days: 60 },
+        maxDate: moment(),
+        dateLimit: { days: 90 },
         showDropdowns: true,
         showWeekNumbers: true,
-        timePicker: false,
+        timePicker: true,
         timePickerIncrement: 1,
         timePicker12Hour: false,
         ranges: {
@@ -160,7 +160,7 @@ function getData(dateRange) {
     var soilData = [];
     var tempDate = [];
       
-      for (i = 0; i < records.length; i++) { 
+      for (i = 0; i < records.length; i+=12) { 
         console.log(records[i]);
       //$.each( records, function(i, item) {
         //console.log(item);
