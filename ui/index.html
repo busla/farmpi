@@ -14,6 +14,7 @@
     <link href="weather-icons/css/weather-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="bootstrap-daterangepicker/daterangepicker-bs3.css" />
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="FlipClock/compiled/flipclock.css">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -88,7 +89,7 @@
 <script src="jquery-ui/jquery-ui.min.js"></script>
 <script src="moment/min/moment.min.js"></script>
 <script type="text/javascript" src="bootstrap-daterangepicker/daterangepicker.js"></script>
-
+<script src="FlipClock/compiled/flipclock.min.js"></script>
     
 <script type="text/javascript">
 $(function() {
@@ -159,7 +160,7 @@ function getData(dateRange) {
       //$.each( records, function(i, item) {
         //console.log(item);
         records[i].sensors.forEach(function(sensor) { 
-          if (sensor.type == 'soil') {
+          if (sensor.type == 'soil') {
             soilData.push(sensor.currentTemp);          
           }
           else {
@@ -167,7 +168,7 @@ function getData(dateRange) {
           }
         
         });
-        tempDate.push(moment(records[i].date));
+        tempDate.push(moment(records[i].date).format('MMMM Do, h:mm'))
           
       };
       
@@ -228,11 +229,14 @@ function constructChart(tempObj) {
 
   <script>
     var socket = io();
-    socket.on('temperature', function(sensors){      
+    socket.on('temperature', function(result){            
       var now = new Date();
-        sensors.forEach(function(sensor) { 
-          //console.log(sensor.id);
-          $('#'+sensor.type).text(sensor.currentTemp);          
+        result.forEach(function(item) { 
+          //console.log('Sensor: '+JSON.stringify(item, null, 4))
+          item.sensors.forEach(function(sensor){
+            console.log(JSON.stringify(sensor, null, 4))
+            $('#'+sensor.type).text(sensor.currentTemp.toFixed(1)); 
+          })
         });
       $('.time').text(now);
     });
@@ -240,5 +244,4 @@ function constructChart(tempObj) {
 
   </body>
 </html>
-
 
