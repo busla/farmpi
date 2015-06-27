@@ -1,5 +1,5 @@
 .wi {
-  font-size: 150px !important;
+  font-size: 50px !important;
 }
 
 .temperature, .scale {
@@ -8,4 +8,15 @@
 
 #tempChart {
     width: 90%;
+}
+
+#reportrange {
+    margin: 10px 0;
+}
+.soil-container {
+    background-color: #CC9900;
+}
+
+.air-container {
+    background-color: #99CCFF;
 }
