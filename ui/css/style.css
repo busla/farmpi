@@ -24,3 +24,15 @@
 .time {
     font-size: 25px;
 }
+
+.footer {
+    background-color: black;
+    font-size: 12px;    
+}
+
+.footer img {
+    margin: 5px auto;
+}
+.author {
+    margin: 20px auto;
+}

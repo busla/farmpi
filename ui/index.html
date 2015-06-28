@@ -68,7 +68,17 @@
       <canvas id="tempChart"></canvas>    
   </div>
 </div>
+    <div class="footer">
+      <div class="container">
+        <div class="col-xs-10">
+          <p class="author text-muted">Made by <a href="http://github.com/busla">Jón Levy</a>, using <a href="http://www.nodejs.org/">Node</a>, <a href="http://jquery.com/">jQuery</a>, a little <a href="http://getbootstrap.com">Bootstrap</a> makeup, <a href="http://www.chartjs.org">ChartJs</a> for the graph and <a href="https://github.com/dangrossman/bootstrap-daterangepicker">BS date-range-picker</a> for intense date ranges.</p>
 
+        </div>
+        <div class="col-xs-2">
+          <img  data-toggle="tooltip" title="Nammi namm, Rasberry Pi is keeping the party going" src="images/rasbpi-logo.png">
+        </div>
+      </div>
+    </div>    
 
 <script src="socket.io-client/socket.io.js"></script>
 <script src="jquery/dist/jquery.min.js"></script>
@@ -229,16 +239,15 @@ var socket = io();
 socket.on('temperature', function(result){            
   //var now = new Date();
     //console.log(JSON.stringify(result, null, 4))
-    console.log('Window' + window.myLineChart)
-    if (window.myLineChart) {
     
+    if (window.myLineChart) {
       window.myLineChart.addData([result[0].sensors[0].currentTemp,result[0].sensors[1].currentTemp], moment(result[0].date).format('MMMM Do, h:mm'))
       console.log(result[0].sensors[0].currentTemp,result[0].sensors[1].currentTemp, moment(result[0].date).format('MMMM Do, h:mm'))
     }
     result.forEach(function(item) { 
       //console.log('Sensor: '+JSON.stringify(item, null, 4))          
       console.log(item.date)
-      $('.time').text(moment(item.date).format('h:mm, MMMM Do'))
+      $('.time').text(moment(item.date).format('H:mm, MMMM Do'))
       item.sensors.forEach(function(sensor){        
         $('#'+sensor.type).text(sensor.currentTemp.toFixed(1))
         
