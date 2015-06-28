@@ -166,13 +166,26 @@ function getData(dateRange) {
     var airData = [];
     var soilData = [];
     var tempDate = [];
-    var interval = records.length % 
+    var cutter = 30
+    console.log('Length: ', records.length)
+
+    if (records.length < cutter) {
+      interval = 1
+    }
+    else {
+      interval = Math.floor(records.length / 30) 
+      
+    }
+
+    
+
       console.log('Interval: ', interval)
-        
-      for (i = 0; i < records.length; i+=15) { 
+      
+      for (i = 0; i < records.length; i+=interval) { 
         //console.log(records[i]);
       //$.each( records, function(i, item) {
         //console.log(item);
+        if (records[i]) {
         records[i].sensors.forEach(function(sensor) { 
           if (sensor.type == 'soil') {
             soilData.push(sensor.currentTemp);          
@@ -182,8 +195,8 @@ function getData(dateRange) {
           }
         
         });
-        tempDate.push(moment(records[i].date).format('MMMM Do, h:mm'))
-          
+        tempDate.push(moment(records[i].date).format('MMMM Do, H:mm'))
+        }          
       };
 
       chartObj = {'soil': soilData, 'air': airData, 'date': tempDate };
@@ -241,8 +254,8 @@ socket.on('temperature', function(result){
     //console.log(JSON.stringify(result, null, 4))
     
     if (window.myLineChart) {
-      window.myLineChart.addData([result[0].sensors[0].currentTemp,result[0].sensors[1].currentTemp], moment(result[0].date).format('MMMM Do, h:mm'))
-      console.log(result[0].sensors[0].currentTemp,result[0].sensors[1].currentTemp, moment(result[0].date).format('MMMM Do, h:mm'))
+      window.myLineChart.addData([result[0].sensors[0].currentTemp,result[0].sensors[1].currentTemp], moment(result[0].date).format('MMMM Do, H:mm'))
+      console.log(result[0].sensors[0].currentTemp,result[0].sensors[1].currentTemp, moment(result[0].date).format('MMMM Do, H:mm'))
     }
     result.forEach(function(item) { 
       //console.log('Sensor: '+JSON.stringify(item, null, 4))          
