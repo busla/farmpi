@@ -11,7 +11,7 @@ var moment = require('moment');
 var ds18b20 = require('ds18b20');
 moment().format(); 
 
-
+var sensors = []
 router.get('/', function(req, res) {
     res.json({ message: 'hooray! welcome to our api!' });   
 });
@@ -54,7 +54,6 @@ router.route('/chart')
     });
 
 
-var sensors = []
 
 var sensorTypes = [
   {
@@ -73,7 +72,8 @@ function getLatestTemp(cb) {
           console.log(err)
           return          
         }
-
+        // Set the global variable
+        sensors = item
         cb(item)
   });  
 }
@@ -91,6 +91,8 @@ app.use(express.static('data'));
 app.use(express.static('ui'));
 app.use(express.static('bower_components'));
 app.use(express.static('node_modules'));
+
+// Get the newest temperature record on boot
 
 
 //console.log('Hostname: '+hostname)
@@ -200,7 +202,8 @@ setInterval(function(){
   }
   getLatestTemp(function(result){
     //console.log('Result: %j', result)
-    io.sockets.emit('temperature', result); 
+    io.emit('temperature', result); 
+    sensors = result
   }) 
    
 }, 60000);
@@ -210,11 +213,9 @@ setInterval(function(){
 io.on('connection', function(socket){
   console.log('a user connected');
 
-  getLatestTemp(function(result){
-    //console.log('Result: %j', result)
-    io.emit('temperature', result);
-  })
-
+    //Send the global variable instead of reading from DB
+    io.emit('temperature', sensors);
+  
 
   socket.on('disconnect', function(){
     console.log('user disconnected');
