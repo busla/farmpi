@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <title>FarmPi - Reykjalundur Squash Sensors</title>
-
+    <link rel="shortcut icon" type="image/png" href="images/favicon.png"/>
     <!-- Bootstrap Theme file-->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
@@ -83,7 +83,6 @@
 
 $(document).ready(function() { 
   //Chart.defaults.global =.responsive = true; 
-
   getData({'from' : moment().startOf('month').format(), 'to' : moment().format()})
 })
 
@@ -115,7 +114,6 @@ $(function() {
         ranges: {
            'Last hour': [moment().startOf('hour'), moment()],
            'Last 6 hours': [moment().subtract(6, 'hours').startOf('hour'), moment()],
-           'Last 12 hours': [moment().subtract(12, 'hours').startOf('hour'), moment()],
            'Today': [moment().startOf('day'), moment()],
            'Yesterday': [moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'day').endOf('day')],
            'Last 3 days': [moment().subtract(3, 'days').startOf('day'), moment()],
@@ -157,8 +155,9 @@ function getData(dateRange) {
     var airData = [];
     var soilData = [];
     var tempDate = [];
-    var interval = records.length
-      console.log('Records: ', records.length/15)
+    var interval = records.length % 
+      console.log('Interval: ', interval)
+        
       for (i = 0; i < records.length; i+=15) { 
         //console.log(records[i]);
       //$.each( records, function(i, item) {
@@ -198,21 +197,21 @@ function constructChart(tempObj) {
             {
                 label: "Air temperature",
                 fillColor: "rgba(151,187,205,0.2)",
-                strokeColor: "rgba(220,220,220,1)",
-                pointColor: "rgba(220,220,220,1)",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#fff",
-                pointHighlightStroke: "rgba(220,220,220,1)",
-                data: $.map(tempObj.air, function(n){return n}),
-            },
-            {
-                label: "Soil temperature",
-                fillColor: "rgba(220,220,220,0.2)",
                 strokeColor: "rgba(151,187,205,1)",
                 pointColor: "rgba(151,187,205,1)",
                 pointStrokeColor: "#fff",
                 pointHighlightFill: "#fff",
                 pointHighlightStroke: "rgba(151,187,205,1)",
+                data: $.map(tempObj.air, function(n){return n}),
+            },
+            {
+                label: "Soil temperature",
+                fillColor: "rgba(220,220,220,0.2)",
+                strokeColor: "rgba(220,220,220,1)",
+                pointColor: "rgba(220,220,220,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(220,220,220,1)",
                 data: $.map(tempObj.soil, function(n){return n}),
             }
 

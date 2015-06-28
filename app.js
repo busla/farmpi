@@ -27,8 +27,8 @@ router.use(function(req, res, next) {
 router.route('/chart')
     
     .get(function(req, res) {
-      console.log('From: '+req.query.from);
-      console.log('To: '+req.query.from);
+      //console.log('From: '+req.query.from);
+      //console.log('To: '+req.query.from);
       
       //from = moment().startOf('hour').toDate().getTime();
       //to = moment().startOf('minute').toDate().getTime();
@@ -39,13 +39,13 @@ router.route('/chart')
         $gt: from,
         $lt: to, 
       }}
-      console.log('Query: ' + query);
+      //console.log('Query: ' + query);
       var chartData = [];
       
       var d = new Date; 
       d.setHours( d.getHours() - 10 );      
       
-      console.log(d);            
+      //console.log(d);            
       db.temperature.find(query).sort({date: 1}).exec(function (err, chart) {
             if (err)
                 res.send(err);              
@@ -93,7 +93,7 @@ app.use(express.static('bower_components'));
 app.use(express.static('node_modules'));
 
 
-console.log('Hostname: '+hostname)
+//console.log('Hostname: '+hostname)
 
 /**
   If on the Pi, read the sensors and save to DB.
@@ -101,7 +101,7 @@ console.log('Hostname: '+hostname)
 
 function addTempToDb(sensorsArr, callback) {
   var tempData = { 'sensors': sensorsArr, 'date': Date.now()};
-  console.log('tempData: %j', tempData)  
+  //console.log('tempData: %j', tempData)  
   db.temperature.insert(tempData, function (err, newDocs) {
     if (err) {
       console.log('Could not save sensors to DB');  
@@ -119,7 +119,7 @@ function getTemperature(sensor, cb) {
         return
     }       
     
-    console.log('Inside getTemperature: '+ value) 
+    //console.log('Inside getTemperature: '+ value) 
 
 
     cb(value)
@@ -133,7 +133,7 @@ function createSensorObj(sensorId, sensorType, temperature, cb ) {
     'type': sensorType,
     'currentTemp': temperature,
   };
-  console.log('inside createSensorObj: %j', sensorObj)
+  //console.log('inside createSensorObj: %j', sensorObj)
   return sensorObj;
 
 }
@@ -156,7 +156,7 @@ setInterval(function(){
   var sensorArr = []
   if (hostname === 'raspberrypi') {
     getSensors(function(ids){
-      console.log("Sensors: %j", ids) 
+      //console.log("Sensors: %j", ids) 
 
       ids.forEach(function(sensor, index, array){
         
@@ -164,18 +164,20 @@ setInterval(function(){
           
           sensorType = _.findWhere(sensorTypes, {'id': sensor})
           sensorObj = createSensorObj(sensorType.id, sensorType.type, temperature)
-          console.log('SensorObj inside: %j', sensorObj)
+          //console.log('SensorObj inside: %j', sensorObj)
           sensorArr.push(sensorObj)//pushTemp(sensorObj)
-
+          /*
           console.log('sensor: %j', sensor)
           console.log('index: %j', index)
           console.log('array length: %j', array.length)
-          console.log('array: %j', array)     
+          console.log('array: %j', array) 
+          */    
           console.log('sensorArray: %j', sensorArr)
             if (index === (array.length -1)) {
-              console.log('Match!')
+              //console.log('Match!')
               addTempToDb(sensorArr)
             }
+
         }) 
       })      
     })
@@ -187,8 +189,8 @@ setInterval(function(){
       sensorObj = sensor
       sensorObj['currentTemp'] = _.random(10, 30)
       sensorArr.push(sensorObj)
-      console.log(sensorArr)
-
+      //console.log(sensorArr)
+      // If last item in array
       if (index === (array.length -1)) {
         addTempToDb(sensorArr)
       }
@@ -197,8 +199,8 @@ setInterval(function(){
 
   }
   getLatestTemp(function(result){
-    console.log('Result: %j', result)
-    io.sockets.emit('temperature', result);
+    //console.log('Result: %j', result)
+    io.sockets.emit('temperature', result); 
   }) 
    
 }, 60000);
@@ -210,7 +212,7 @@ io.on('connection', function(socket){
 
   getLatestTemp(function(result){
     console.log('Result: %j', result)
-    io.emit('temperature', result);
+    socket.emit('temperature', result); 
   })
 
 
