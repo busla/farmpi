@@ -80,9 +80,10 @@
 <script type="text/javascript" src="FlipClock/compiled/flipclock.min.js"></script>
 
 <script type="text/javascript">
-
+window.myLineChart = ''
 $(document).ready(function() { 
   //Chart.defaults.global =.responsive = true; 
+  
   getData({'from' : moment().startOf('month').format(), 'to' : moment().format()})
 })
 
