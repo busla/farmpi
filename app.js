@@ -213,9 +213,10 @@ setInterval(function(){
 io.on('connection', function(socket){
   console.log('a user connected');
 
-    //Send the global variable instead of reading from DB
-    io.emit('temperature', sensors);
-  
+  getLatestTemp(function(result){
+    console.log('Result: %j', result)
+    io.emit('temperature', result);   
+  }) 
 
   socket.on('disconnect', function(){
     console.log('user disconnected');
