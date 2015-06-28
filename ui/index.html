@@ -157,7 +157,7 @@ function getData(dateRange) {
     var airData = [];
     var soilData = [];
     var tempDate = [];
-      
+      console.log('Records: ', records.length/15)
       for (i = 0; i < records.length; i+=15) { 
         //console.log(records[i]);
       //$.each( records, function(i, item) {
@@ -234,7 +234,7 @@ socket.on('temperature', function(result){
     result.forEach(function(item) { 
       //console.log('Sensor: '+JSON.stringify(item, null, 4))          
       console.log(item.date)
-      $('.time').text(moment(item.date).format('MMMM Do, h:mm'))
+      $('.time').text(moment(item.date).format('h:mm, MMMM Do'))
       item.sensors.forEach(function(sensor){        
         $('#'+sensor.type).text(sensor.currentTemp.toFixed(1))
         
