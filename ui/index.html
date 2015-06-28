@@ -80,10 +80,10 @@
 <script type="text/javascript" src="FlipClock/compiled/flipclock.min.js"></script>
 
 <script type="text/javascript">
-window.myLineChart = ''
+
 $(document).ready(function() { 
   //Chart.defaults.global =.responsive = true; 
-  
+
   getData({'from' : moment().startOf('month').format(), 'to' : moment().format()})
 })
 
@@ -229,9 +229,12 @@ var socket = io();
 socket.on('temperature', function(result){            
   //var now = new Date();
     //console.log(JSON.stringify(result, null, 4))
-    window.myLineChart.addData([result[0].sensors[0].currentTemp,result[0].sensors[1].currentTemp], moment(result[0].date).format('MMMM Do, h:mm'))
-    console.log(result[0].sensors[0].currentTemp,result[0].sensors[1].currentTemp, moment(result[0].date).format('MMMM Do, h:mm'))
+    console.log('Window' + window.myLineChart)
+    if (window.myLineChart) {
     
+      window.myLineChart.addData([result[0].sensors[0].currentTemp,result[0].sensors[1].currentTemp], moment(result[0].date).format('MMMM Do, h:mm'))
+      console.log(result[0].sensors[0].currentTemp,result[0].sensors[1].currentTemp, moment(result[0].date).format('MMMM Do, h:mm'))
+    }
     result.forEach(function(item) { 
       //console.log('Sensor: '+JSON.stringify(item, null, 4))          
       console.log(item.date)
