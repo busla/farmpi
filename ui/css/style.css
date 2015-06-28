@@ -1,5 +1,5 @@
 .wi {
-  font-size: 50px !important;
+  font-size: 75px !important;
 }
 
 .temperature, .scale {
@@ -19,4 +19,8 @@
 
 .air-container {
     background-color: rgba(220,220,220,0.2);
+}
+
+.time {
+    font-size: 25px;
 }

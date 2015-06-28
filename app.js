@@ -152,6 +152,7 @@ function getSensors(cb) {
 
 
 setInterval(function(){
+  
   var sensorArr = []
   if (hostname === 'raspberrypi') {
     getSensors(function(ids){
@@ -195,9 +196,14 @@ setInterval(function(){
     })
 
   }
- 
+  getLatestTemp(function(result){
+    console.log('Result: %j', result)
+    io.sockets.emit('temperature', result);
+  }) 
+   
 }, 60000);
  
+
 
 io.on('connection', function(socket){
   console.log('a user connected');
@@ -207,14 +213,6 @@ io.on('connection', function(socket){
     io.emit('temperature', result);
   })
 
-  setInterval(function(){     
-    getLatestTemp(function(result){
-      console.log('Result: %j', result)
-      io.emit('temperature', result);
-    }) 
-    
-  }, 60000);
-  
 
   socket.on('disconnect', function(){
     console.log('user disconnected');
