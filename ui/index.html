@@ -157,6 +157,7 @@ function getData(dateRange) {
     var airData = [];
     var soilData = [];
     var tempDate = [];
+    var interval = records.length
       console.log('Records: ', records.length/15)
       for (i = 0; i < records.length; i+=15) { 
         //console.log(records[i]);
@@ -196,7 +197,7 @@ function constructChart(tempObj) {
         datasets: [
             {
                 label: "Air temperature",
-                fillColor: "rgba(220,220,220,0.2)",
+                fillColor: "rgba(151,187,205,0.2)",
                 strokeColor: "rgba(220,220,220,1)",
                 pointColor: "rgba(220,220,220,1)",
                 pointStrokeColor: "#fff",
@@ -206,7 +207,7 @@ function constructChart(tempObj) {
             },
             {
                 label: "Soil temperature",
-                fillColor: "rgba(151,187,205,0.2)",
+                fillColor: "rgba(220,220,220,0.2)",
                 strokeColor: "rgba(151,187,205,1)",
                 pointColor: "rgba(151,187,205,1)",
                 pointStrokeColor: "#fff",
