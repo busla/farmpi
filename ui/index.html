@@ -40,7 +40,7 @@
         <div class="col-xs-12">        
           <h3>Soil temperature</h3>
             <i class="wi wi-thermometer-internal"></i> <span id="soil" class="temperature"></span><span class="scale">&deg;C</span>            
-          <p><i class="fa fa-clock-o"></i><span class="time"></span></p>
+          <p><i class="fa fa-clock-o"></i>  <span class="time"></span></p>
         </div>
       </div>
     </div>  
@@ -49,7 +49,7 @@
         <div class="col-xs-12">
           <h3>Air temperature</h3>
           <i class="wi wi-thermometer-exterior"></i> <span id="air" class="temperature"></span><span class="scale">&deg;C</span>
-          <p><i class="fa fa-clock-o"></i><span class="time"></span></p>
+          <p><i class="fa fa-clock-o"></i>  <span class="time"></span></p>
         </div>
       </div>
     </div>
@@ -83,18 +83,18 @@
 
 $(document).ready(function() { 
   Chart.defaults.global.responsive = true; 
-  date_time();
+  //date_time();
   getData({'from' : moment().startOf('month').format(), 'to' : moment().format()})
 })
 
-
+/*
 function date_time() {
   now = moment().format('HH:mm:ss')
   $('.time').text(now)
   setTimeout(function () { date_time() }, 1000)
 
 }
-
+*/
 
 $(function() {
  
@@ -103,7 +103,7 @@ $(function() {
     $('#reportrange').daterangepicker({
         format: 'MM/DD/YYYY',
         startDate: moment().subtract(1, 'days'),
-        endDate: moment(),
+        endDate: moment().add(1, 'day'),
         minDate: '01/01/2012',
         maxDate: moment(),
         dateLimit: { days: 90 },
@@ -158,7 +158,7 @@ function getData(dateRange) {
     var tempDate = [];
       
       for (i = 0; i < records.length; i++) { 
-        console.log(records[i]);
+        //console.log(records[i]);
       //$.each( records, function(i, item) {
         //console.log(item);
         records[i].sensors.forEach(function(sensor) { 
@@ -230,9 +230,11 @@ socket.on('temperature', function(result){
     
     result.forEach(function(item) { 
       //console.log('Sensor: '+JSON.stringify(item, null, 4))          
-      item.sensors.forEach(function(sensor){
+      console.log(item.date)
+      $('.time').text(moment(item.date).format('MMMM Do, h:mm'))
+      item.sensors.forEach(function(sensor){        
+        $('#'+sensor.type).text(sensor.currentTemp.toFixed(1))
         
-        $('#'+sensor.type).text(sensor.currentTemp.toFixed(1)); 
       })
     });
 
