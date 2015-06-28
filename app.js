@@ -211,8 +211,8 @@ io.on('connection', function(socket){
   console.log('a user connected');
 
   getLatestTemp(function(result){
-    console.log('Result: %j', result)
-    socket.emit('temperature', result); 
+    //console.log('Result: %j', result)
+    io.emit('temperature', result);
   })
 
 
