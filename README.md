@@ -4,7 +4,7 @@ A weekend gardening project I designed for a small greenhouse in Reykjalundur, I
 
 The sensors used are <a href="https://www.adafruit.com/products/381">ds18b20</a>. The application backend is scalable and will read values from all sensors it can find and save it to DB. 
 
-See <a href="http://farmpi.nonni.cc">DEMO</a> 
+See <a href="http://52.24.208.229/">DEMO</a> 
 
 *note: the demo is generating random numbers since the Pi and the sensors are occupied :-)*
 
