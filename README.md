@@ -9,20 +9,20 @@ See <a href="http://farmpi.nonni.cc">DEMO</a> (note: the demo is generating rand
 
 ## Installation
 
-clone the repo
 ```
-npm install
-bower install
-npm start
+$ git clone https://github.com/busla/farmpi
+$ npm install
+$ bower install
+$ npm start
 ```
+The script will check if it´s running on a Pi with the hostname raspberrypi. Otherwise it will run in demo mode.
+
 ## To start on boot
-
-sudo npm install -g forever
-
-cd your-project
-
-sudo forever start your-app-name.js
-
+```
+$ sudo npm install -g forever
+$ cd your-project
+$ sudo forever start your-app-name.js
+```
 ## Usage
 
 You can read temperatures within a selected date range. 
