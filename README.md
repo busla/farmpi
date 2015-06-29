@@ -10,13 +10,11 @@ See <a href="http://farmpi.nonni.cc">DEMO</a> (note: the demo is generating rand
 ## Installation
 
 clone the repo
-
+```
 npm install
-
 bower install
-
 npm start
-
+```
 ## To start on boot
 
 sudo npm install -g forever
