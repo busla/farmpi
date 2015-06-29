@@ -15,6 +15,8 @@ First of all, you need the Pi, the sensors and other stuff to hook them up.
 
 I bought and followed everything in <a href="https://learn.adafruit.com/adafruits-raspberry-pi-lesson-11-ds18b20-temperature-sensing/overview">this tutorial</a>.
 
+After you have wired everything up correctly and the sensors are working you can install the app.
+
 ```
 $ git clone https://github.com/busla/farmpi
 $ npm install
@@ -41,8 +43,9 @@ Socket.IO is used to pipe new temperatures to the clients and draw on the chart.
     "date": 1435613824213,
     "_id": "qwBoea1IznS2xbN7"
 }
-
 ```
+
+
 ## To start on boot
 ```
 $ sudo npm install -g forever
