@@ -2,7 +2,7 @@
 
 A weekend gardening project I designed for a small greenhouse in Reykjalundur, Iceland, farmed by <a href="https://www.facebook.com/nick.robinson.1829405?fref=ts">Nick Robinson</a>. Growing squash in Iceland seems to be tough so he wanted constant temperature measurement in soil and air.
 
-The sensors used are <a href="https://www.adafruit.com/products/381">ds18b20</a>.
+The sensors used are <a href="https://www.adafruit.com/products/381">ds18b20</a>. The application backend is scalable and will read values from all sensors it can find and save it to DB. 
 
 See <a href="http://farmpi.nonni.cc">DEMO</a> 
 
@@ -11,14 +11,38 @@ See <a href="http://farmpi.nonni.cc">DEMO</a>
 
 ## Installation
 
+First of all, you need the Pi, the sensors and other stuff to hook them up. 
+
+I bought and followed everything in <a href="https://learn.adafruit.com/adafruits-raspberry-pi-lesson-11-ds18b20-temperature-sensing/overview">this tutorial</a>.
+
 ```
 $ git clone https://github.com/busla/farmpi
 $ npm install
 $ bower install
 $ npm start
 ```
-The script will check if it´s running on a Pi with the hostname raspberrypi. Otherwise it will run in demo mode.
+## The code
 
+I used <a href="https://github.com/louischatriot/nedb">NeDB</a> database since it´s a node module and has an API similar to MongoDB. The app iterates over connected sensors and stores their id, value and type (user defined) with a timestamp. Drawing this data on a line graph with time on X axis and temperature on Y becomes relatively simple.
+
+Socket.IO is used to pipe new temperatures to the clients and draw on the chart. The data is live on the screen.
+
+```json
+{
+    "sensors": [{
+        "id": "28-000006a3684e",
+        "type": "soil",
+        "currentTemp": 22.755530063528568
+    }, {
+        "id": "28-000006a36dbe",
+        "type": "air",
+        "currentTemp": 22.94879347225651
+    }],
+    "date": 1435613824213,
+    "_id": "qwBoea1IznS2xbN7"
+}
+
+```
 ## To start on boot
 ```
 $ sudo npm install -g forever
@@ -49,6 +73,7 @@ You can read temperatures within a selected date range.
 
 <a href="https://nodejs.org/">NodeJS</a>
 
+<a href="https://github.com/louischatriot/nedb">NeDB</a>
 ## License
 
 This is free and unencumbered software released into the public domain.
