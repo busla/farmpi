@@ -260,7 +260,7 @@ socket.on('temperature', function(result){
     result.forEach(function(item) { 
       //console.log('Sensor: '+JSON.stringify(item, null, 4))          
       console.log(item.date)
-      $('.time').text(moment(item.date).format('H:mm, MMMM Do'))
+      $('.time').text(moment(item.date).format('H:mm:ss, MMMM Do'))
       item.sensors.forEach(function(sensor){        
         $('#'+sensor.type).text(sensor.currentTemp.toFixed(1))
         

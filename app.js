@@ -86,6 +86,12 @@ var hostname = require("os").hostname();
 db = {}
 db.temperature = new Datastore('temperature.db');
 db.temperature.loadDatabase();
+/*
+app.use("data", express.static(__dirname + 'data'));
+app.use("ui", express.static(__dirname + 'ui'));
+app.use("bower_components", express.static(__dirname + 'bower_components'));
+app.use("node_modules", express.static(__dirname + 'node_modules'));
+*/
 
 app.use(express.static('data'));
 app.use(express.static('ui'));
@@ -189,7 +195,7 @@ setInterval(function(){
 
     sensorTypes.forEach(function(sensor, index, array){
       sensorObj = sensor
-      sensorObj['currentTemp'] = _.random(10, 30)
+      sensorObj['currentTemp'] = (Math.random() * (23 - 21) + 21)
       sensorArr.push(sensorObj)
       //console.log(sensorArr)
       // If last item in array
@@ -206,7 +212,7 @@ setInterval(function(){
     sensors = result
   }) 
    
-}, 60000);
+}, 1000);
  
 
 
@@ -235,6 +241,6 @@ app.get('/', function(req, res){
 
 
 
-http.listen(3000, function(){
-  console.log('listening on 0:3000');
+http.listen(80, function(){
+  console.log('listening on 0:80');
 });
