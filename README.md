@@ -10,15 +10,19 @@ See <a href="http://farmpi.nonni.cc">DEMO</a> (note: the demo is generating rand
 ## Installation
 
 clone the repo
+
 npm install
+
 bower install
+
 npm start
 
 ## To start on boot
 
-https://www.npmjs.com/package/forever-service
-<a href="https://github.com/zapty/forever-service/issues/21">Make sure you add your $PATH variable to the startup script</>
+sudo npm install -g forever
+
 cd your-project
+
 sudo forever start your-app-name.js
 
 ## Usage
@@ -36,9 +40,13 @@ You can read temperatures within a selected date range.
 ## Credits
 
 <a href="http://www.chartjs.org/">Chart.js</a>
+
 <a href="http://getbootstrap.com/">Bootstrap</a>
+
 <a href="https://github.com/dangrossman/bootstrap-daterangepicker">DateRangePicker</a>
+
 <a href="https://www.raspberrypi.org/">RPi</a>
+
 <a href="https://nodejs.org/">NodeJS</a>
 
 ## License
