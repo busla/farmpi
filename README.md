@@ -1,6 +1,6 @@
 # FarmPi
 
-A weekend gardening project I designed for a small greenhouse in Reykjalundur, Iceland, farmed by <a href="https://www.facebook.com/nick.robinson.1829405?fref=ts">Nick Robinson</a>. Growing squash in Iceland seems to be tough so he wanted constant temperature measurement in soil and air.
+A weekend gardening project I designed for a small greenhouse in Reykjalundur, Iceland, farmed by a good friend <a href="https://www.facebook.com/nick.robinson.1829405?fref=ts">Nick Robinson</a>. Growing squash in Iceland seems to be tough so he wanted constant temperature measurement in soil and air.
 
 The sensors used are <a href="https://www.adafruit.com/products/381">ds18b20</a>. The application backend is scalable and will read values from all sensors it can find and save it to DB. 
 
