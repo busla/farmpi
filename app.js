@@ -259,6 +259,6 @@ app.get('/', function(req, res){
 
 
 
-http.listen(config.get('Sensors.port'), function(){
-  console.log('listening on 0:'+config.get('Sensors.port'));
+http.listen(3000, function(){
+  console.log('listening on 0:3000');
 });
