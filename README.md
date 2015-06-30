@@ -29,6 +29,9 @@ I used <a href="https://github.com/louischatriot/nedb">NeDB</a> database since i
 
 Socket.IO is used to pipe new temperatures to the clients and draw on the chart. The data is live on the screen.
 
+You can pass `{'from': $date, 'to': $date}` to /api/chart and get the following json:
+
+
 ```json
 {
     "sensors": [{
