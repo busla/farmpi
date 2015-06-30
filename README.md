@@ -26,7 +26,7 @@ $ npm start
 
 There are configuration files in the config folder that can be modified. To load the appropriate config file, add NODE_ENV variable with the name of your environment:
 
-`export NODE_ENV=raspberrypi`
+`$ export NODE_ENV=raspberrypi`
 
 Node will load the settings from the file with the corresponding filename.
 
