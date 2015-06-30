@@ -4,7 +4,7 @@ A weekend gardening project I designed for a small greenhouse in Reykjalundur, I
 
 The sensors used are <a href="https://www.adafruit.com/products/381">ds18b20</a>. The application backend is scalable and will read values from all sensors it can find and save it to DB. 
 
-See <a href="http://52.24.208.229/">DEMO</a> 
+See <a href="http://farmpi.nonni.cc">DEMO</a> 
 
 *note: the demo is generating random numbers since the Pi and the sensors are occupied :-)*
 
@@ -23,6 +23,22 @@ $ npm install
 $ bower install
 $ npm start
 ```
+
+There are configuration files in the config folder that can be modified. To load the appropriate config file, add NODE_ENV variable with the name of your environment:
+
+`$ export NODE_ENV=raspberrypi`
+
+Node will load the settings from the file with the corresponding filename.
+
+```json
+  "Sensors": {
+    "device": "raspberrypi",
+    "saveInterval": 15, // minutes
+    "currentTempInterval": 1, // seconds
+  }
+```
+
+
 ## The code
 
 I used <a href="https://github.com/louischatriot/nedb">NeDB</a> database since it´s a node module and has an API similar to MongoDB. The app iterates over connected sensors and stores their id, value and type (user defined) with a timestamp. Drawing this data on a line graph with time on X axis and temperature on Y becomes relatively simple.
