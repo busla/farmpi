@@ -82,9 +82,6 @@ function getLatestTemp(cb) {
 // Current temperature
 var currentTemp;
 
-var hostname = require("os").hostname();
-
-
 db = {}
 db.temperature = new Datastore('temperature.db');
 db.temperature.loadDatabase();
@@ -96,14 +93,6 @@ app.use(express.static('ui'));
 app.use(express.static('bower_components'));
 app.use(express.static('node_modules'));
 
-// Get the newest temperature record on boot
-
-
-//console.log('Hostname: '+hostname)
-
-/**
-  If on the Pi, read the sensors and save to DB.
-**/
 
 function addTempToDb(sensorArr, callback) {
   //var tempData = { 'sensors': sensorsArr, 'date': Date.now()};
@@ -125,9 +114,6 @@ function getTemperature(sensor, cb) {
         return
     }       
     
-    //console.log('Inside getTemperature: '+ value) 
-
-
     cb(value)
     
   })    
@@ -160,9 +146,8 @@ function getCurrentTemp(cb) {
   var sensorArr = []
   var record = {}
   
-  if (hostname === 'raspberrypi') {
+  if (config.get('farmpi.device') === 'raspberrypi') {
     getSensors(function(ids){
-      //console.log("Sensors: %j", ids) 
 
       ids.forEach(function(sensor, index, array){
         
@@ -170,15 +155,8 @@ function getCurrentTemp(cb) {
           
           sensorType = _.findWhere(sensorTypes, {'id': sensor})
           sensorObj = createSensorObj(sensorType.id, sensorType.type, temperature)
-          //console.log('SensorObj inside: %j', sensorObj)
           sensorArr.push(sensorObj)//pushTemp(sensorObj)
-          /*
-          console.log('sensor: %j', sensor)
-          console.log('index: %j', index)
-          console.log('array length: %j', array.length)
-          console.log('array: %j', array) 
-          */    
-          //console.log('sensorArray: %j', sensorArr)
+
           if (index === (array.length -1)) {
             //console.log('Match!')
             record = { 'sensors': sensorArr, 'date': Date.now()};
@@ -216,7 +194,7 @@ setInterval(function(){
     })
 
    
-}, 1000)
+}, 1000*config.get('farmpi.currentTempInterval'))
 
 
 setInterval(function(){
@@ -225,7 +203,7 @@ setInterval(function(){
     addTempToDb(items)
     //sensors = result
   })   
-}, (1000*60*15));
+}, (1000*60*config.get('farmpi.saveInterval')));
  
 
 

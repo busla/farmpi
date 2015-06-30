@@ -1,8 +1,9 @@
 module.exports = {
 
-      "Sensors": {        
+      "farmpi": {
+        "device": "localhost",
         "saveInterval": 1, // minutes
-        "currentTempInterval": 60, // seconds
+        "currentTempInterval": 1, // seconds
       }
 
 }
