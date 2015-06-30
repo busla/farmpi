@@ -9,6 +9,8 @@ var fs = require('fs');
 var router = express.Router();
 var moment = require('moment');
 var ds18b20 = require('ds18b20');
+var config = require('config');
+
 moment().format(); 
 
 var sensors = []
@@ -257,6 +259,6 @@ app.get('/', function(req, res){
 
 
 
-http.listen(3000, function(){
-  console.log('listening on 0:3000');
+http.listen(config.get('Sensors.port'), function(){
+  console.log('listening on 0:'+config.get('Sensors.port'));
 });

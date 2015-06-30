@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "bootstrap": "^3.3.4",
+    "config": "^1.14.0",
     "ds18b20": "^0.0.2",
     "express": "^4.12.4",
     "firebase": "^2.2.7",
