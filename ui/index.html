@@ -104,6 +104,7 @@
 <script type="text/javascript">
 
 $(document).ready(function() { 
+  
   //Chart.defaults.global =.responsive = true;
   getData({'from' : moment().startOf('month').format(), 'to' : moment().format()})
 })
@@ -162,6 +163,7 @@ $(function() {
             firstDay: 1
         }
     }, function(start, end, label) {
+        window.stream = false
         window.myLineChart.destroy();
         getData({'from' : start.format(), 'to' : end.format()});
         console.log('Callback: '+ start.format(), end.format(), label);
@@ -260,31 +262,35 @@ function constructChart(tempObj) {
 
 
 }     
-
+window.stream = true;
 var socket = io();
 var socketCounter = 0
 socket.on('temperature', function(result){            
   //var now = new Date();
     //console.log(JSON.stringify(result, null, 4))
-    console.log(socketCounter % 5)
-    //if ((socketCounter % 5) === 4) {
+    if (window.stream) {
+      console.log(socketCounter % 5)
+      //if ((socketCounter % 5) === 4) {
       
       if (window.myLineChart) {
+        console.log('Sensor: '+JSON.stringify(result, null, 4))
         window.myLineChart.removeData();
-        window.myLineChart.addData([result[0].sensors[0].currentTemp,result[0].sensors[1].currentTemp], moment(result[0].date).format('MMMM Do, H:mm'))
+        window.myLineChart.addData([result[0].sensors[0].currentTemp,result[0].sensors[1].currentTemp], moment(result[0].date).format('MMMM Do, H:mm:ss'))
         console.log(result[0].sensors[0].currentTemp,result[0].sensors[1].currentTemp, moment(result[0].date).format('MMMM Do, H:mm'))
       }
-    //}
-    result.forEach(function(item) { 
-      socketCounter++
-      //console.log('Sensor: '+JSON.stringify(item, null, 4))          
-      console.log(item.date)
-      $('.time').text(moment(item.date).format('H:mm:ss, MMMM Do'))
-      item.sensors.forEach(function(sensor){        
-        $('#'+sensor.type).text(sensor.currentTemp.toFixed(1))
-        
+    }
+      //}
+      result.forEach(function(item) { 
+        socketCounter++
+        //console.log('Sensor: '+JSON.stringify(item, null, 4))          
+        console.log(item.date)
+        $('.time').text(moment(item.date).format('H:mm:ss, MMMM Do'))
+        item.sensors.forEach(function(sensor){        
+          $('#'+sensor.type).text(sensor.currentTemp.toFixed(1))
+          
+        })
       })
-    });
+    
 
 });
   </script>

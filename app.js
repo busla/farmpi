@@ -86,9 +86,9 @@ var hostname = require("os").hostname();
 db = {}
 db.temperature = new Datastore('temperature.db');
 db.temperature.loadDatabase();
-db.temperature.ensureIndex({ fieldName: 'date' }, function (err) {
-  console.log(err)
+db.temperature.ensureIndex({ fieldName: 'date', unique: true, sparse: true }, function (err) {
 });
+
 app.use(express.static('data'));
 app.use(express.static('ui'));
 app.use(express.static('bower_components'));
@@ -103,10 +103,10 @@ app.use(express.static('node_modules'));
   If on the Pi, read the sensors and save to DB.
 **/
 
-function addTempToDb(sensorsArr, callback) {
-  var tempData = { 'sensors': sensorsArr, 'date': Date.now()};
+function addTempToDb(sensorArr, callback) {
+  //var tempData = { 'sensors': sensorsArr, 'date': Date.now()};
   //console.log('tempData: %j', tempData)  
-  db.temperature.insert(tempData, function (err, newDocs) {
+  db.temperature.insert(sensorArr, function (err, newDocs) {
     if (err) {
       console.log('Could not save sensors to DB');  
       return;
@@ -154,10 +154,10 @@ function getSensors(cb) {
     })
 }
 
-
-setInterval(function(){
-  
+function getCurrentTemp(cb) {
   var sensorArr = []
+  var record = {}
+  
   if (hostname === 'raspberrypi') {
     getSensors(function(ids){
       //console.log("Sensors: %j", ids) 
@@ -176,50 +176,70 @@ setInterval(function(){
           console.log('array length: %j', array.length)
           console.log('array: %j', array) 
           */    
-          console.log('sensorArray: %j', sensorArr)
-            if (index === (array.length -1)) {
-              //console.log('Match!')
-              addTempToDb(sensorArr)
-            }
-
+          //console.log('sensorArray: %j', sensorArr)
+          if (index === (array.length -1)) {
+            //console.log('Match!')
+            record = { 'sensors': sensorArr, 'date': Date.now()};
+            cb(record)
+          }
         }) 
       })      
     })
-  } 
-
-  else {
-
+  }
+  else {  
     sensorTypes.forEach(function(sensor, index, array){
       sensorObj = sensor
-      sensorObj['currentTemp'] = _.random(10, 30)
-      sensorArr.push(sensorObj)
+      sensorObj['currentTemp'] = (Math.random() * (23 - 21) + 21)
+      sensorArr.push(sensorObj)     
       //console.log(sensorArr)
       // If last item in array
+      
       if (index === (array.length -1)) {
-        addTempToDb(sensorArr)
+        record = { 'sensors': sensorArr, 'date': Date.now()};
+        cb(record)
+        //addTempToDb(sensorArr)
       }
+      
+      
+    })
+  }
+}
 
+
+setInterval(function(){
+
+    getCurrentTemp(function(items){
+      console.log('Items: ',items)
+      io.emit('temperature', [items]);  
     })
 
-  }
-  getLatestTemp(function(result){
-    //console.log('Result: %j', result)
-    io.emit('temperature', result); 
-    sensors = result
-  }) 
    
-}, 60000);
+}, 1000)
+
+
+setInterval(function(){
+  getCurrentTemp(function(items){
+    console.log('Saving to DB: %j', items)
+    addTempToDb(items)
+    //sensors = result
+  })   
+}, (1000*60*15));
  
 
 
 io.on('connection', function(socket){
   console.log('a user connected');
-
+  
+  getCurrentTemp(function(items){
+    console.log('Items: ',items)
+    io.emit('temperature', [items]);  
+  })
+  /*
   getLatestTemp(function(result){
     console.log('Result: %j', result)
     io.emit('temperature', result);   
   }) 
-
+  */
   socket.on('disconnect', function(){
     console.log('user disconnected');
   });
