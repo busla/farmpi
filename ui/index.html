@@ -255,8 +255,9 @@ socket.on('temperature', function(result){
     //console.log(JSON.stringify(result, null, 4))
     console.log(socketCounter % 5)
     //if ((socketCounter % 5) === 4) {
-      window.myLineChart.removeData();
+      
       if (window.myLineChart) {
+        window.myLineChart.removeData();
         window.myLineChart.addData([result[0].sensors[0].currentTemp,result[0].sensors[1].currentTemp], moment(result[0].date).format('MMMM Do, H:mm'))
         console.log(result[0].sensors[0].currentTemp,result[0].sensors[1].currentTemp, moment(result[0].date).format('MMMM Do, H:mm'))
       }
