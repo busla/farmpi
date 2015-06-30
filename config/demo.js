@@ -2,7 +2,7 @@ module.exports = {
 
       "farmpi": {
         "device": "server",
-        "saveInterval": 15, // minutes
+        "saveInterval": 1, // minutes
         "currentTempInterval": 1, // seconds
       }
 
