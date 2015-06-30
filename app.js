@@ -86,7 +86,9 @@ var hostname = require("os").hostname();
 db = {}
 db.temperature = new Datastore('temperature.db');
 db.temperature.loadDatabase();
-
+db.temperature.ensureIndex({ fieldName: 'date' }, function (err) {
+  console.log(err)
+});
 app.use(express.static('data'));
 app.use(express.static('ui'));
 app.use(express.static('bower_components'));
