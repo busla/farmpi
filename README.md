@@ -65,7 +65,11 @@ You can pass `{'from': $date, 'to': $date}` to /api/chart and get the following 
 ```
 
 
-## To start on boot
+## Run forever
+
+To run the app independently on your Pi, install the `forever` module. It will run on port :3000, but if you want to run it on port 80, you can route all requests from 3000 > 80 with the following command:
+`sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8002`
+
 ```
 $ sudo npm install -g forever
 $ cd your-project
