@@ -37,7 +37,6 @@
     margin: 20px auto;
 }
 
-.canvas {
-    margin: 20px;
-    padding: 10px;
+canvas {
+    margin: 20px !important;
 }
