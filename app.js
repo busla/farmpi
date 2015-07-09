@@ -146,27 +146,6 @@ function getCurrentTemp(cb) {
   var sensorArr = []
   var record = {}
   
-  if (config.get('farmpi.device') === 'raspberrypi') {
-    getSensors(function(ids){
-
-      ids.forEach(function(sensor, index, array){
-        
-        getTemperature(sensor, function(temperature) {
-          
-          sensorType = _.findWhere(sensorTypes, {'id': sensor})
-          sensorObj = createSensorObj(sensorType.id, sensorType.type, temperature)
-          sensorArr.push(sensorObj)//pushTemp(sensorObj)
-
-          if (index === (array.length -1)) {
-            //console.log('Match!')
-            record = { 'sensors': sensorArr, 'date': Date.now()};
-            cb(record)
-          }
-        }) 
-      })      
-    })
-  }
-  else {  
     sensorTypes.forEach(function(sensor, index, array){
       sensorObj = sensor
       sensorObj['currentTemp'] = (Math.random() * (23 - 21) + 21)
@@ -182,7 +161,6 @@ function getCurrentTemp(cb) {
       
       
     })
-  }
 }
 
 
@@ -194,7 +172,7 @@ setInterval(function(){
     })
 
    
-}, 1000*config.get('farmpi.currentTempInterval'))
+}, 1000*1)
 
 
 setInterval(function(){
@@ -203,7 +181,7 @@ setInterval(function(){
     addTempToDb(items)
     //sensors = result
   })   
-}, (1000*60*config.get('farmpi.saveInterval')));
+}, (1000*60*15));
  
 
 
