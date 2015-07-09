@@ -10,6 +10,17 @@ var router = express.Router();
 var moment = require('moment');
 var ds18b20 = require('ds18b20');
 var config = require('config');
+sendmail = require('sendmail')();
+ 
+sendmail({
+    from: 'farmpi@nonni.cc',
+    to: 'nonni@nonni.cc, robinson.nicholas.i@gmail.com',
+    subject: 'test sendmail',
+    content: 'Mail of test sendmail ',
+  }, function(err, reply) {
+    console.log(err && err.stack);
+    console.dir(reply);
+});
 
 moment().format(); 
 
