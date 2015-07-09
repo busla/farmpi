@@ -65,12 +65,29 @@ You can pass `{'from': $date, 'to': $date}` to /api/chart and get the following 
 ```
 
 
-## To start on boot
+## Run forever
+
+To run the app independently on your Pi, install the `forever` module. It will run on port :3000, but if you want to run it on port 80, you can route all requests from 3000 > 80 with the following command:
+
 ```
 $ sudo npm install -g forever
 $ cd your-project
 $ sudo forever start your-app-name.js
 ```
+
+`sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 3000`
+
+Also, to start on boot you can install forever as a service with the, you guessed it, <a href="https://github.com/zapty/forever-service/">forever-service</a> module.
+
+`$ sudo npm install -g forever-service`
+
+You will have to add the $PATH variable to you startup script, for example:
+
+```
+$ cd farmpi
+$ sudo forever-service install farmpi -e "PATH=/usr/local/bin:\$PATH"
+```
+
 ## Usage
 
 You can read temperatures within a selected date range. 
